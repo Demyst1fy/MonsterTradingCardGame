@@ -6,7 +6,6 @@ namespace SWEN1.MTCG.ClassLibrary
     {
         
     }
-
     public class User : IUser
     {
         public string Username { get; private set; }
