@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SWEN1.MTCG.ClassLibrary;
+﻿using System.Collections.Generic;
 
 namespace SWEN1.MTCG.ClassLibrary
 {
@@ -14,23 +9,23 @@ namespace SWEN1.MTCG.ClassLibrary
 
     public class User : IUser
     {
-        public string username { get; private set; }
-        public string password { get; private set; }
-        public int coins { get; private set; }
+        public string Username { get; private set; }
+        public string Password { get; private set; }
+        public int Coins { get; private set; }
         
-        public List<Card> stackCollection { get; private set; }
-        public List<Card> deckCollection { get; private set; }
+        public List<Card> StackCollection { get; private set; }
+        public List<Card> DeckCollection { get; private set; }
 
         public User(string username, string password, int coins)
         {
-            this.username = username;
-            this.password = password;
-            this.coins = coins;
+            Username = username;
+            Password = password;
+            Coins = coins;
         }
 
-        public void ChooseDeckCards(List<Card> deckCollection_)
+        public void ChooseDeckCards(List<Card> deckCollection)
         {
-            deckCollection = deckCollection_;
+            DeckCollection = deckCollection;
         }
     }
 }
