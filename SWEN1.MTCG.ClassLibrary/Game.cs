@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
 
 namespace SWEN1.MTCG.ClassLibrary
 {
@@ -8,8 +7,8 @@ namespace SWEN1.MTCG.ClassLibrary
     {
         public int Round { get; private set; }
         
-        private User _player1;
-        private User _player2;
+        private readonly User _player1;
+        private readonly User _player2;
 
         public Game(User player1, User player2)
         {
@@ -18,30 +17,31 @@ namespace SWEN1.MTCG.ClassLibrary
             Round = 1;
         }
 
-        public static double CompareElement(Card playerCard, Card enemyCard)
+        private static double CompareElement(Card playerCard, Card enemyCard)
         {
             double damageAdj;
 
-            if ((playerCard.Element == Element.Water && enemyCard.Element == Element.Fire) ||
-                (playerCard.Element == Element.Fire && enemyCard.Element == Element.Normal) ||
-                (playerCard.Element == Element.Normal && enemyCard.Element == Element.Water))
+            switch (playerCard.Element)
             {
-                damageAdj = playerCard.Damage * 2;
-            } 
-            else if ((playerCard.Element == Element.Fire && enemyCard.Element == Element.Water) ||
-                     (playerCard.Element == Element.Water && enemyCard.Element == Element.Normal) ||
-                     (playerCard.Element == Element.Normal && enemyCard.Element == Element.Fire))
-            {
-                damageAdj = playerCard.Damage * 0.5;
-            }
-            else
-            {
-                damageAdj = playerCard.Damage * 0;
+                case Element.Water when enemyCard.Element == Element.Fire:
+                case Element.Fire when enemyCard.Element == Element.Normal:
+                case Element.Normal when enemyCard.Element == Element.Water:
+                    damageAdj = playerCard.Damage * 2;
+                    break;
+                case Element.Fire when enemyCard.Element == Element.Water:
+                case Element.Water when enemyCard.Element == Element.Normal:
+                case Element.Normal when enemyCard.Element == Element.Fire:
+                    damageAdj = playerCard.Damage * 0.5;
+                    break;
+                default:
+                    damageAdj = playerCard.Damage * 0;
+                    break;
             }
 
             return damageAdj;
         }
-        public static bool CompareMonsterEffects(Card playerCard, Card enemyCard)
+
+        private static bool CompareMonsterEffects(Card playerCard, Card enemyCard)
         {
             if (playerCard is MonsterCard monsterPlayerCard && enemyCard is MonsterCard monsterEnemyCard)
             {
@@ -71,7 +71,7 @@ namespace SWEN1.MTCG.ClassLibrary
                     return true;
                 }
             }
-            else if (playerCard is SpellCard spellPlayerCard2 && enemyCard is MonsterCard monsterEnemyCard2)
+            else if (playerCard is SpellCard && enemyCard is MonsterCard monsterEnemyCard2)
             {
                 if (monsterEnemyCard2.MonsterType == Monster.Kraken)
                 {
@@ -95,15 +95,15 @@ namespace SWEN1.MTCG.ClassLibrary
             var player2ChosenCard = player2Cards[rdPlayer2];
 
             Console.WriteLine($"{_player1.Username}'s DeckList:");
-            for (int i = 0; i < player1Cards.Count; i++)
+            foreach (var player1Card in player1Cards)
             {
-                Console.WriteLine($"{i+1}: {player1Cards[i].Name} ({player1Cards[i].Damage} Damage)");
+                Console.WriteLine($"{player1Card.Id}: {player1Card.Name} ({player1Card.Damage} Damage)");
             }
             
             Console.WriteLine($"\n{_player2.Username}'s DeckList:");
-            for (int i = 0; i < player2Cards.Count; i++)
+            foreach (var player2Card in player2Cards)
             {
-                Console.WriteLine($"{i+1}: {player2Cards[i].Name} ({player2Cards[i].Damage} Damage)");
+                Console.WriteLine($"{player2Card.Id}: {player2Card.Name} ({player2Card.Damage} Damage)");
             }
             
             Console.WriteLine($"\nRound {Round}");

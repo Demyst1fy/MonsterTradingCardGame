@@ -2,8 +2,8 @@
 {
     public class MonsterCard : Card
     {
-        public Monster MonsterType { get; private set; }
-        public MonsterCard(string name, int damage) : base(name, damage)
+        public Monster MonsterType { get; }
+        public MonsterCard(string id, string name, int damage) : base(id, name, damage) 
         {
             if(name.Contains("Goblin")) { MonsterType = Monster.Goblin; }
             else if(name.Contains("Dragon")) { MonsterType = Monster.Dragon; }
