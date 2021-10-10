@@ -27,15 +27,14 @@ namespace SWEN1.MTCG.Test
         }
         
         [Test]
-        public void Test_AssignUserWithCard()
+        public void Test_AssignUserWithStackAndDeck()
         {
             List<Card> cards = new List<Card>();
 
             cards.Add(new MonsterCard("67f9048f-99b8-4ae4-b866-d8008d00c53d", "FireOrk", 10));
             cards.Add(new SpellCard("70962948-2bf7-44a9-9ded-8c68eeac7793","FireSpell", 90));
 
-            User user1 = new User("Jay", "12345", 50, It.IsAny<List<Card>>());
-            user1.ChooseDeckCards(cards);
+            User user1 = new User("Jay", "12345", 50, cards);
 
             foreach (var card in user1.DeckCollection)
             {

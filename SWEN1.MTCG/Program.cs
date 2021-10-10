@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Security.Cryptography;
+using Microsoft.VisualBasic.FileIO;
 using SWEN1.MTCG.ClassLibrary;
 
 namespace SWEN1.MTCG
@@ -8,81 +11,91 @@ namespace SWEN1.MTCG
     {
         static void Main(string[] args)
         {
-            var player1Cards = new List<Card>();
-            var player2Cards = new List<Card>();
-            
-            player1Cards.Add(DeclareCard(GenerateId(),"FireElf", 12));
-            player1Cards.Add(DeclareCard(GenerateId(),"WaterGoblin", 14));
-            player1Cards.Add(DeclareCard(GenerateId(),"Kraken", 16));
-            player1Cards.Add(DeclareCard(GenerateId(),"WaterOrk", 19));
-            player1Cards.Add(DeclareCard(GenerateId(),"Wizard", 45));
-            player1Cards.Add(DeclareCard(GenerateId(),"WaterDragon", 45));
-            player1Cards.Add(DeclareCard(GenerateId(),"FireOrk", 40));
-            player1Cards.Add(DeclareCard(GenerateId(),"FireGoblin", 35));
-            
-            player2Cards.Add(DeclareCard(GenerateId(),"Wizard", 45));
-            player2Cards.Add(DeclareCard(GenerateId(),"WaterDragon", 45));
-            player2Cards.Add(DeclareCard(GenerateId(),"FireOrk", 40));
-            player2Cards.Add(DeclareCard(GenerateId(),"FireGoblin", 35));
-            
-            var player1 = new User("Jay", "12345", 50, player1Cards);
-            var player2 = new User("Marc", "54321", 60, player2Cards);
-            
-            player1.ChooseDeckCards(player1Cards);
-            player2.ChooseDeckCards(player2Cards);
-            
-            var game = new Game(player1, player2);
-            
-            while (game.Round < 100 && player1Cards.Count > 0 && player2Cards.Count > 0)
+            Console.WriteLine("Welcome to your Monster Trading Card Game!");
+            Console.WriteLine("---------------------------------------");
+            string username = "";
+            string password = "";
+
+            while (username != "Jay" || password != "12345")
+            {
+                username = EnterCredentials("Username: ");
+                password = EnterCredentials("Password: ");
+            }
+
+            List<Card> player1Cards = new List<Card>();
+            player1Cards.Add(Shop.DeclareCard("dasdacx","FireElf", 12));
+            player1Cards.Add(Shop.DeclareCard("fdsgfdh","WaterGoblin", 14));
+            player1Cards.Add(Shop.DeclareCard("hfghffvgn","Kraken", 16));
+            player1Cards.Add(Shop.DeclareCard("gdfgdfgdb","WaterOrk", 19));
+
+            List<Card> player2Cards = new List<Card>();
+            player2Cards.Add(Shop.DeclareCard("gfjgfmjg","Wizard", 45));
+            player2Cards.Add(Shop.DeclareCard("jfgjgfjrt","WaterDragon", 45));
+            player2Cards.Add(Shop.DeclareCard("hfghgfn","FireOrk", 40));
+            player2Cards.Add(Shop.DeclareCard("hfghfhf","FireGoblin", 35));
+
+            var user = new User(username, password, 20, player1Cards);
+            var bot = new User("Marc", "54321", 60, player2Cards);
+
+            var game = new Match(user, bot);
+
+            while (game.Round < 100 && user.DeckCollection.Count > 0 && bot.DeckCollection.Count > 0)
             {
                 game.BattleAction();
             }
 
-            if (player1Cards.Count <= 0)
+            if (user.DeckCollection.Count <= 0)
             {
-                Console.WriteLine($"{player2.Username} won the game!");
+                Console.WriteLine($"{bot.Username} won the game!");
+                bot.increWins();
+                user.increLosses();
             }
-            else if (player2Cards.Count <= 0)
+            else if (bot.DeckCollection.Count <= 0)
             {
-                Console.WriteLine($"{player1.Username} won the game!");
+                Console.WriteLine($"{user.Username} won the game!");
+                user.increWins();
+                bot.increLosses();
             }
             else
             {
                 Console.WriteLine($"Over 100 Rounds were player, let's decide it to a draw!");
             }
-        }
 
-        private static Card DeclareCard(string id, string name, int damage)
-        {
-            if (name.Contains("Spell"))
-            {
-                return new SpellCard(id, name, damage);
-            }
-            return new MonsterCard(id, name, damage);
-        }
-
-        private static string GenerateId()
-        {
-            const int idLength = 36;
+            Console.WriteLine("\nWon rounds:");
+            Console.WriteLine($"{user.Username}: {game.Player1RoundWon}");
+            Console.WriteLine($"{bot.Username}: {game.Player2RoundWon}");
             
-            var random = new Random();
-            const string chars = "abcdefghijklmnpqrstuvwxyz0123456789";
+        }
+        
 
-            var buffer = new char[idLength];
+        private static string EnterCredentials(string message)
+        {
+            string input = "";
+            Console.Write($"{message}");
             
-            for(var i = 0; i < idLength; ++i)
+            input = Console.ReadLine();
+            return input;
+        }
+        
+        public static int UserInput()
+        {
+            int input = 9;
+            Console.Write("\n1. Play one ranked match\n" +
+                          "2. Buy Packages (5 Cards) for 5 coins\n" +
+                          "3. Manage your cards\n" +
+                          "4. Deal your Trade\n" +
+                          "5. Quit\n" +
+                          "Choose one menu point: ");
+            
+            while (input < 1 || input > 5)
             {
-                if (i is 8 or 13 or 18 or 23)
-                {
-                    buffer[i] = '-';
-                }
-                else
-                {
-                    buffer[i] = chars[random.Next(chars.Length)];
+                input = Convert.ToInt32(Console.ReadLine());
+                if (input < 1 || input > 5) {
+                    Console.Write("Unknown entry! Try again: ");
                 }
             }
 
-            return new string(buffer);
+            return input;
         }
     }
 }

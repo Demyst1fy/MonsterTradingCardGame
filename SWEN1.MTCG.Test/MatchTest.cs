@@ -5,7 +5,7 @@ using SWEN1.MTCG.ClassLibrary;
 
 namespace SWEN1.MTCG.Test
 {
-    public class GameTest
+    public class MatchTest
     {
         [Test]
         public void Test_BattleAction()

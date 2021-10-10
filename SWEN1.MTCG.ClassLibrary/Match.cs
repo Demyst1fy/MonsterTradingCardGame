@@ -3,20 +3,20 @@ using System.Collections.Generic;
 
 namespace SWEN1.MTCG.ClassLibrary
 {
-    public class Game
+    public class Match
     {
-        public int Round { get; private set; }
+        public int Round { get; private set; } = 1;
         
         private readonly User _player1;
         private readonly User _player2;
 
-        public Game(User player1, User player2)
+        public int Player1RoundWon { get; private set; }
+        public int Player2RoundWon { get; private set; }
+        public Match(User player1, User player2)
         {
             _player1 = player1;
             _player2 = player2;
-            Round = 1;
         }
-
         private static double CompareElement(Card playerCard, Card enemyCard)
         {
             double damageAdj;
@@ -82,12 +82,18 @@ namespace SWEN1.MTCG.ClassLibrary
             
             return false;
         }
+
+        public void SaveDeck()
+        {
+            List<Card> player1Cards = _player1.DeckCollection;
+            List<Card> player2Cards = _player2.DeckCollection;
+        }
         public void BattleAction()
         {
             Random rd = new Random();
             List<Card> player1Cards = _player1.DeckCollection;
             List<Card> player2Cards = _player2.DeckCollection;
-            
+
             int rdPlayer1 = rd.Next(player1Cards.Count);
             int rdPlayer2 = rd.Next(player2Cards.Count);
 
@@ -97,19 +103,23 @@ namespace SWEN1.MTCG.ClassLibrary
             Console.WriteLine($"{_player1.Username}'s DeckList:");
             foreach (var player1Card in player1Cards)
             {
-                Console.WriteLine($"{player1Card.Id}: {player1Card.Name} ({player1Card.Damage} Damage)");
+                Console.WriteLine($"- {player1Card.Name} ({player1Card.Damage} Damage)");
             }
             
             Console.WriteLine($"\n{_player2.Username}'s DeckList:");
             foreach (var player2Card in player2Cards)
             {
-                Console.WriteLine($"{player2Card.Id}: {player2Card.Name} ({player2Card.Damage} Damage)");
+                Console.WriteLine($"- {player2Card.Name} ({player2Card.Damage} Damage)");
             }
+            
+            //System.Threading.Thread.Sleep(1000);
             
             Console.WriteLine($"\nRound {Round}");
             Console.WriteLine($"{_player1.Username}: {player1ChosenCard.Name} ({player1ChosenCard.Damage} Damage) " +
                               $"VS {_player2.Username}: {player2ChosenCard.Name} ({player2ChosenCard.Damage} Damage)\n");
 
+            //System.Threading.Thread.Sleep(1000);
+            
             double damageAdj1 = 0;
             double damageAdj2 = 0;
 
@@ -137,19 +147,22 @@ namespace SWEN1.MTCG.ClassLibrary
                 Console.WriteLine($"=> {player1ChosenCard.Name} wins.\n");
                 player1Cards.Add(player2ChosenCard);
                 player2Cards.Remove(player2ChosenCard);
+                Player1RoundWon++;
             }
             else if (damageAdj1 < damageAdj2 || monsterStatus1)
             {
                 Console.WriteLine($"=> {player2ChosenCard.Name} wins.\n");
                 player2Cards.Add(player1ChosenCard);
                 player1Cards.Remove(player1ChosenCard);
+                Player2RoundWon++;
             }
             
             else
             {
                 Console.WriteLine("Draw (no action)\n");
             }
-
+            
+            //System.Threading.Thread.Sleep(2000);
             Round++;
         }
     }
