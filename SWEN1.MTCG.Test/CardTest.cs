@@ -9,7 +9,7 @@ namespace SWEN1.MTCG.Test
         [Test]
         public void Test_AssignMonsterCard()
         {
-            MonsterCard card = new MonsterCard("Knight", 15, Element.Normal, Monster.Knight);
+            MonsterCard card = new MonsterCard("Knight", 15);
             Assert.AreEqual("Knight", card.Name);
             Assert.AreEqual(15, card.Damage);
             Assert.AreEqual(Element.Normal, card.Element);
@@ -19,7 +19,7 @@ namespace SWEN1.MTCG.Test
         [Test]
         public void Test_AssignSpellCard()
         {
-            SpellCard card = new SpellCard("WaterSpell", 75, Element.Water);
+            SpellCard card = new SpellCard("WaterSpell", 75);
             Assert.AreEqual("WaterSpell", card.Name);
             Assert.AreEqual(75, card.Damage);
             Assert.AreEqual(Element.Water, card.Element);
@@ -30,8 +30,8 @@ namespace SWEN1.MTCG.Test
         {
             List<Card> cards = new List<Card>();
 
-            cards.Add(new MonsterCard("FireOrk", 10, Element.Fire, Monster.Ork));
-            cards.Add(new SpellCard("FireSpell", 90, Element.Fire));
+            cards.Add(new MonsterCard("FireOrk", 10));
+            cards.Add(new SpellCard("FireSpell", 90));
 
             User user1 = new User("Jay", "12345", 50);
             user1.ChooseDeckCards(cards);

@@ -10,17 +10,18 @@ namespace SWEN1.MTCG
         {
             var player1 = new User("Jay", "12345", 50);
             var player2 = new User("Marc", "54321", 60);
+            
             var player1Cards = new List<Card>();
             var player2Cards = new List<Card>();
-
-            player1Cards.Add(new MonsterCard("FireOrk", 15, Element.Fire, Monster.Ork));
-            player1Cards.Add(new SpellCard("WaterSpell", 75, Element.Water));
-            player1Cards.Add(new MonsterCard("Knight", 10, Element.Normal, Monster.Knight));
-            player1Cards.Add(new SpellCard("RegularSpell", 50, Element.Water));
-            player2Cards.Add(new MonsterCard("Knight", 15, Element.Normal, Monster.Knight));
-            player2Cards.Add(new SpellCard("FireSpell", 45, Element.Fire));
-            player2Cards.Add(new SpellCard("WaterSpell", 40, Element.Fire));
-            player2Cards.Add(new SpellCard("RegularSpell", 35, Element.Fire));
+            
+            player1Cards.Add(DeclareCard("FireElf", 12));
+            player1Cards.Add(DeclareCard("WaterGoblin", 14));
+            player1Cards.Add(DeclareCard("Kraken", 16));
+            player1Cards.Add(DeclareCard("WaterOrk", 19));
+            player2Cards.Add(DeclareCard("Wizard", 45));
+            player2Cards.Add(DeclareCard("WaterDragon", 45));
+            player2Cards.Add(DeclareCard("FireOrk", 40));
+            player2Cards.Add(DeclareCard("FireGoblin", 35));
             
             player1.ChooseDeckCards(player1Cards);
             player2.ChooseDeckCards(player2Cards);
@@ -45,6 +46,15 @@ namespace SWEN1.MTCG
                 Console.WriteLine($"Over 100 Rounds were player, let's decide it to a draw!");
             }
             
+        }
+
+        public static Card DeclareCard(string name, int damage)
+        {
+            if (name.Contains("Spell"))
+            {
+                return new SpellCard(name, damage);
+            }
+            return new MonsterCard(name, damage);
         }
     }
 }

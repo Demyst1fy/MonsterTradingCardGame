@@ -11,11 +11,14 @@
         public double Damage { get; private set; }
         public Element Element { get; private set; }
 
-        protected Card(string name, double damage, Element element)
+        protected Card(string name, double damage)
         {
             Name = name;
             Damage = damage;
-            Element = element;
+
+            if (name.Contains("Fire")) { Element = Element.Fire; }
+            else if (name.Contains("Water")) { Element = Element.Water; }
+            else { Element = Element.Normal; }
         }
     }
 }

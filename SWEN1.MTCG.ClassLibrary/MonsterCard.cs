@@ -3,9 +3,15 @@
     public class MonsterCard : Card
     {
         public Monster MonsterType { get; private set; }
-        public MonsterCard(string name, int damage, Element element, Monster monsterType) : base(name, damage, element)
+        public MonsterCard(string name, int damage) : base(name, damage)
         {
-            MonsterType = monsterType;
+            if(name.Contains("Goblin")) { MonsterType = Monster.Goblin; }
+            else if(name.Contains("Dragon")) { MonsterType = Monster.Dragon; }
+            else if(name.Contains("Wizard")) { MonsterType = Monster.Wizard; }
+            else if(name.Contains("Ork")) { MonsterType = Monster.Ork; }
+            else if(name.Contains("Knight")) { MonsterType = Monster.Knight; }
+            else if(name.Contains("Kraken")) { MonsterType = Monster.Kraken; }
+            else { MonsterType = Monster.Elf; }
         }
     }
 }
