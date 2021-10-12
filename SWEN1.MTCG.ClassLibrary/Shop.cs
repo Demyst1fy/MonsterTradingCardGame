@@ -1,18 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Net.Http.Headers;
 
 namespace SWEN1.MTCG.ClassLibrary
 {
     public class Shop
     {
-        public static Card DeclareCard(string id, string name, int damage)
-        {
-            if (name.Contains("Spell"))
-            {
-                return new SpellCard(id, name, damage);
-            }
-            return new MonsterCard(id, name, damage);
-        }
         private static string GenerateId()
         {
             const int idLength = 36;
@@ -62,7 +54,7 @@ namespace SWEN1.MTCG.ClassLibrary
             {
                 var rd = new Random();
                 int dmg = rd.Next(50, 90);
-                user.DeckCollection.Add(DeclareCard(GenerateId(), GenerateCardName(), dmg));
+                user.DeckCollection.Add(new Card(GenerateId(), GenerateCardName(), dmg));
                 Console.WriteLine($"- {user.DeckCollection[i].Name} ({user.DeckCollection[i].Damage})");
             }
         }

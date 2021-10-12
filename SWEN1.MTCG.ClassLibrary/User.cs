@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace SWEN1.MTCG.ClassLibrary
 {
@@ -8,20 +9,38 @@ namespace SWEN1.MTCG.ClassLibrary
         public string Password { get; }
         public string AuthToken { get; private set; }
         public int Coins { get; }
-        public List<Card> StackCollection { get; }
-        public List<Card> DeckCollection { get; private set; }
+        public List<ICard> StackCollection { get; set; }
+        public List<ICard> DeckCollection { get; set; }
         public int Wins { get; private set; }
         public int Losses { get; private set; }
+        public int Draws { get; private set; }
 
-        public User(string username, string password, int coins, List<Card> deckCollection)
+        public User(IUser previousPerson)
+        {
+            Username = previousPerson.Username;
+            Password = previousPerson.Username;
+            Coins = previousPerson.Coins;
+            DeckCollection = new List<ICard>(previousPerson.DeckCollection);
+        }
+        public User(string username, string password, int coins)
         {
             Username = username;
             Password = password;
             Coins = coins;
-            DeckCollection = deckCollection;
+            DeckCollection = new List<ICard>();
         }
 
-        public void increWins() { Wins++; }
-        public void increLosses() { Losses++; }
+        public void IncreWins() { Wins++; }
+        public void IncreLosses() { Losses++; }
+        public void IncreDraws() { Draws++; }
+
+        public void OutPutWinRate()
+        {
+            if (Wins == 0 && Losses == 0 && Draws == 0)
+            {
+                return;
+            }
+            Console.WriteLine($"Winrate: {Math.Round((Wins/(double)(Wins+Losses+Draws))*100, 2)}% ({Wins}W/{Losses}L/{Draws}D)");
+        }
     }
 }

@@ -7,7 +7,7 @@ namespace SWEN1.MTCG.ClassLibrary
         string Username { get; }
         string Password { get; }
         int Coins { get; }
-        List<Card> StackCollection { get; }
-        List<Card> DeckCollection { get; }
+        List<ICard> StackCollection { get; set; }
+        List<ICard> DeckCollection { get; set; }
     }
 }
