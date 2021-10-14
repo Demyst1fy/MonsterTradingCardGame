@@ -18,7 +18,7 @@ namespace SWEN1.MTCG.ClassLibrary
             Player2 = player2;
         }
 
-        public virtual void BattleAction()
+        public void BattleAction()
         {
             var rd = new Random();
 
