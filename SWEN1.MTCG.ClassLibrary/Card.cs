@@ -57,37 +57,28 @@ namespace SWEN1.MTCG.ClassLibrary
             return damageAdj;
         }
 
-        public bool CompareCard(ICard enemyCard)
+        public bool CheckEffect(ICard enemyCard)
         {
-            if(Type != Type.Spell && enemyCard.Type != Type.Spell) {
-                if (Type == Type.Goblin && enemyCard.Type == Type.Dragon)
-                {
+            switch (Type)
+            {
+                case Type.Goblin when enemyCard.Type == Type.Dragon:
                     Console.WriteLine($"{Name} is afraid of {enemyCard.Name}!");
                     return true;
-                }
-                if (Type == Type.Ork && enemyCard.Type == Type.Wizard)
-                {
+                case Type.Ork when enemyCard.Type == Type.Wizard:
                     Console.WriteLine($"{enemyCard.Name} is putting {Name} under control!");
                     return true;
-                }
-                if (Type == Type.Dragon && enemyCard.Type == Type.Elf && enemyCard.Element == Element.Fire)
-                {
+                case Type.Dragon when enemyCard.Type == Type.Elf && enemyCard.Element == Element.Fire:
                     Console.WriteLine($"{enemyCard.Name} is able to evade {Name}'s attack!");
                     return true;
-                }
+                case Type.Knight when enemyCard.Type == Type.Spell && enemyCard.Element == Element.Water:
+                    Console.WriteLine($"{Name} drowned in the {enemyCard.Name}!");
+                    return true;
+                case Type.Spell when enemyCard.Type == Type.Kraken:
+                    Console.WriteLine($"{enemyCard.Name} is immune against spells!");
+                    return true;
+                default:
+                    return false;
             }
-            else if (Type == Type.Knight && enemyCard.Type == Type.Spell && enemyCard.Element == Element.Water)
-            {
-                Console.WriteLine($"{Name} drowned in the {enemyCard.Name}!");
-                return true;
-            }
-            else if (Type == Type.Spell && enemyCard.Type == Type.Kraken)
-            {
-                Console.WriteLine($"{enemyCard.Name} is immune against spells!");
-                return true;
-            }
-
-            return false;
         }
     }
 }

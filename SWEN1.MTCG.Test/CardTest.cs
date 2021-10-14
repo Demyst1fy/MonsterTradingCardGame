@@ -55,5 +55,24 @@ namespace SWEN1.MTCG.Test
                 }
             }
         }
+        
+        [Test]
+        public void Test_MonsterEffect()
+        {
+            var card1 = new Card("67f9048f-99b8-4ae4-b866-d8008d00c53d", "FireOrk", 45);
+            var card2 = new Card("70962948-2bf7-44a9-9ded-8c68eeac7793","WaterWizard", 70);
+
+            Assert.True(card1.CheckEffect(card2));
+        }
+        
+        [Test]
+        public void Test_DamageAdjustment()
+        {
+            var card1 = new Card("67f9048f-99b8-4ae4-b866-d8008d00c53d", "FireSpell", 60);
+            var card2 = new Card("70962948-2bf7-44a9-9ded-8c68eeac7793","WaterWizard", 70);
+
+            Assert.AreEqual(30, card1.CompareElement(card2.Element));
+            Assert.AreEqual(140, card2.CompareElement(card1.Element));
+        }
     }
 }

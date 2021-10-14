@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using SWEN1.MTCG.ClassLibrary;
 
 namespace SWEN1.MTCG

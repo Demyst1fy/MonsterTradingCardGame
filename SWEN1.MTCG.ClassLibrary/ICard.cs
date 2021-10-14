@@ -8,6 +8,6 @@
         Element Element { get; }
         Type Type { get; }
         double CompareElement(Element enemyCard);
-        bool CompareCard(ICard enemyCard);
+        bool CheckEffect(ICard enemyCard);
     }
 }

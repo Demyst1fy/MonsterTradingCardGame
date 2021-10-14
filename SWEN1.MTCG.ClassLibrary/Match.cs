@@ -54,8 +54,8 @@ namespace SWEN1.MTCG.ClassLibrary
             double damageAdj1 = 0;
             double damageAdj2 = 0;
 
-            var monsterStatus1 = myCard.CompareCard(enemyCard);
-            var monsterStatus2 = enemyCard.CompareCard(myCard);
+            var monsterStatus1 = myCard.CheckEffect(enemyCard);
+            var monsterStatus2 = enemyCard.CheckEffect(myCard);
 
             if (monsterStatus1 == false && monsterStatus2 == false)
             {
