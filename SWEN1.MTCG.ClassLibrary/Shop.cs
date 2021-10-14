@@ -53,9 +53,9 @@ namespace SWEN1.MTCG.ClassLibrary
             for (int i = 0; i < 5; i++)
             {
                 var rd = new Random();
-                int dmg = rd.Next(50, 90);
-                user.DeckCollection.Add(new Card(GenerateId(), GenerateCardName(), dmg));
-                Console.WriteLine($"- {user.DeckCollection[i].Name} ({user.DeckCollection[i].Damage})");
+                int rdDmg = rd.Next(50, 90);
+                user.DeckCollection.Add(new Card(GenerateId(), GenerateCardName(), rdDmg));
+                Console.WriteLine($"- {user.DeckCollection[^1].Name} ({user.DeckCollection[^1].Damage})");
             }
         }
     }

@@ -47,7 +47,7 @@ namespace SWEN1.MTCG
                         
                         var game = new Match(userTmp, enemyTmp);
                         
-                        while (game.Round < 200 && userTmp.DeckCollection.Count > 0 && enemyTmp.DeckCollection.Count > 0)
+                        while (game.Round <= 100 && userTmp.DeckCollection.Count > 0 && enemyTmp.DeckCollection.Count > 0)
                         {
                             game.BattleAction();
                         }
