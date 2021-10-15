@@ -5,29 +5,25 @@ namespace SWEN1.MTCG.ClassLibrary
 {
     public class User : IUser
     {
+        public int ID { get; }
         public string Username { get; }
-        public string Password { get; }
         public string AuthToken { get; private set; }
-        public int Coins { get; }
-        public List<ICard> StackCollection { get; set; }
-        public List<ICard> DeckCollection { get; set; }
+        public List<ICard> Deck { get; set; }
         public int Wins { get; private set; }
         public int Losses { get; private set; }
         public int Draws { get; private set; }
 
         public User(IUser previousPerson)
         {
+            ID = previousPerson.ID;
             Username = previousPerson.Username;
-            Password = previousPerson.Username;
-            Coins = previousPerson.Coins;
-            DeckCollection = new List<ICard>(previousPerson.DeckCollection);
+            Deck = new List<ICard>(previousPerson.Deck);
         }
-        public User(string username, string password, int coins)
+        public User(int id, string username)
         {
+            ID = id;
             Username = username;
-            Password = password;
-            Coins = coins;
-            DeckCollection = new List<ICard>();
+            Deck = new List<ICard>();
         }
 
         public void IncreWins() { Wins++; }

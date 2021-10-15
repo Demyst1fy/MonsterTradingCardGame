@@ -31,11 +31,11 @@ namespace SWEN1.MTCG.Test
         [Test]
         public void Test_AssignUserWithStackAndDeck()
         {
-            User user1 = new User("Jay", "12345", 50);
-            user1.DeckCollection.Add(new Card("67f9048f-99b8-4ae4-b866-d8008d00c53d", "FireOrk", 10));
-            user1.DeckCollection.Add(new Card("70962948-2bf7-44a9-9ded-8c68eeac7793","FireSpell", 90));
+            User user1 = new User(1, "Jay");
+            user1.Deck.Add(new Card("67f9048f-99b8-4ae4-b866-d8008d00c53d", "FireOrk", 10));
+            user1.Deck.Add(new Card("70962948-2bf7-44a9-9ded-8c68eeac7793","FireSpell", 90));
 
-            foreach (var card in user1.DeckCollection)
+            foreach (var card in user1.Deck)
             {
                 if (card.Type != Type.Spell)
                 {

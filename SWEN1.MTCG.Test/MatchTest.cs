@@ -29,8 +29,8 @@ namespace SWEN1.MTCG.Test
             card1.Setup(mock => mock.Type).Returns(Type.Ork);
             card2.Setup(mock => mock.Type).Returns(Type.Wizard);
 
-            user1.Setup(mock => mock.DeckCollection).Returns(deck1);
-            user2.Setup(mock => mock.DeckCollection).Returns(deck2);
+            user1.Setup(mock => mock.Deck).Returns(deck1);
+            user2.Setup(mock => mock.Deck).Returns(deck2);
 
             var game = new Mock<Match>(user1.Object, user2.Object);
             
@@ -60,8 +60,8 @@ namespace SWEN1.MTCG.Test
             card1.Setup(mock => mock.Type).Returns(Type.Spell);
             card2.Setup(mock => mock.Type).Returns(Type.Wizard);
 
-            user1.Setup(mock => mock.DeckCollection).Returns(deck1);
-            user2.Setup(mock => mock.DeckCollection).Returns(deck2);
+            user1.Setup(mock => mock.Deck).Returns(deck1);
+            user2.Setup(mock => mock.Deck).Returns(deck2);
 
             var game = new Mock<Match>(user1.Object, user2.Object);
             

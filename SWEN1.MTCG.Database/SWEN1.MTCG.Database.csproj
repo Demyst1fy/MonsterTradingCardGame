@@ -5,7 +5,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\SWEN1.MTCG.Database\SWEN1.MTCG.Database.csproj" />
+      <PackageReference Include="Npgsql" Version="6.0.0-rc.2" />
     </ItemGroup>
 
 </Project>

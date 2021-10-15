@@ -48,14 +48,19 @@ namespace SWEN1.MTCG.ClassLibrary
         // temporarily add on deck
         public static void BuyPackage(User user)
         {
-
+            Database database = new Database();
+            
             Console.WriteLine("You gained following cards: ");
             for (int i = 0; i < 5; i++)
             {
                 var rd = new Random();
+                
+                string rdID = GenerateId();
+                string rdCardName = GenerateCardName();
                 int rdDmg = rd.Next(50, 90);
-                user.DeckCollection.Add(new Card(GenerateId(), GenerateCardName(), rdDmg));
-                Console.WriteLine($"- {user.DeckCollection[^1].Name} ({user.DeckCollection[^1].Damage})");
+                
+                database.InsertNewCardStack(user.ID, rdID, rdCardName, rdDmg);
+                Console.WriteLine($"- {rdCardName} ({rdDmg})");
             }
         }
     }

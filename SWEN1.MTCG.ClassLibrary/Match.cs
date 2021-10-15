@@ -22,8 +22,8 @@ namespace SWEN1.MTCG.ClassLibrary
         {
             var rd = new Random();
 
-            var myCards = Player1.DeckCollection;
-            var enemyCards = Player2.DeckCollection;
+            var myCards = Player1.Deck;
+            var enemyCards = Player2.Deck;
 
             var rd1 = rd.Next(myCards.Count);
             var rd2 = rd.Next(enemyCards.Count);

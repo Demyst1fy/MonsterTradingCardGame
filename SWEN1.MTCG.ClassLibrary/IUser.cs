@@ -4,10 +4,8 @@ namespace SWEN1.MTCG.ClassLibrary
 {
     public interface IUser
     {
+        int ID { get; }
         string Username { get; }
-        string Password { get; }
-        int Coins { get; }
-        List<ICard> StackCollection { get; set; }
-        List<ICard> DeckCollection { get; set; }
+        List<ICard> Deck { get; set; }
     }
 }
