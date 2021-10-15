@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data;
 using SWEN1.MTCG.ClassLibrary;
+using Npgsql;
 
 namespace SWEN1.MTCG
 {
@@ -7,29 +10,70 @@ namespace SWEN1.MTCG
     {
         static void Main(string[] args)
         {
+            Database database = new Database();
+            
             Console.WriteLine("Welcome to your Monster Trading Card Game!");
             Console.WriteLine("---------------------------------------");
-            string username = "";
-            string password = "";
 
-            while (username != "Jay" || password != "12345")
+            int id = -1;
+            
+            User user = null;
+
+            while (id == -1)
             {
-                username = EnterCredentials("Username: ");
-                password = EnterCredentials("Password: ");
+                int input1 = LoginOrRegister();
+                switch (input1)
+                {
+                    case 1: 
+                        var userdataReg = new string[3];
+
+                        while (userdataReg[0] != "0" && userdataReg[1] != "0" && userdataReg[2] != "0")
+                        {
+                            userdataReg[0] = EnterCredentials("New Username: ");
+                            userdataReg[1] = EnterCredentials("Password: ");
+                            userdataReg[2] = EnterCredentials("Confirm Password: ");
+                        
+                            if (userdataReg[0] == "0" || userdataReg[1] == "0" || userdataReg[2] == "0")
+                            {
+                                Console.WriteLine($"Registration canceled!");
+                                break;
+                            }
+                            if (database.RegisterUser(userdataReg))
+                            {
+                                break;
+                            }
+                        }
+                        break;
+                    case 2:
+                        string username = "", password = "";
+                        
+                        while (username != "0" && password != "0")
+                        {
+                            username = EnterCredentials("Username: ");
+                            password = EnterCredentials("Password: ");
+                
+                            if (username == "0" || password == "0")
+                            {
+                                Console.WriteLine($"Login canceled!");
+                                break;
+                            }
+                            database.LoginUser(username, password);
+                            
+                            /*if (id != -1)
+                            {
+                                user = new User(id, username, password);
+                                break;
+                            }*/
+                        }
+                        break;
+                }
             }
 
-            var user = new User(username, password, 20);
-            
-            user.DeckCollection.Add(new Card("dasdacx","FireSpell", 40));
-            user.DeckCollection.Add(new Card("fdsgfdh","WaterGoblin", 45));
-            user.DeckCollection.Add(new Card("hfghffvgn","Kraken", 38));
-            user.DeckCollection.Add(new Card("gdfgdfgdb","WaterOrk", 49));
-            
-            var bot = new User("Marc", "54321", 60);
-            bot.DeckCollection.Add(new Card("gfjgfmjg","Wizard", 45));
-            bot.DeckCollection.Add(new Card("jfgjgfjrt","WaterDragon", 45));
-            bot.DeckCollection.Add(new Card("hfghgfn","FireOrk", 40));
-            bot.DeckCollection.Add(new Card("hfghfhf","WaterSpell", 35));
+            var bot = new User(2,"Marc");
+            bot.Deck.Add(new Card("gfjgfmjg","Wizard", 45));
+            bot.Deck.Add(new Card("jfgjgfjrt","WaterDragon", 45));
+            bot.Deck.Add(new Card("hfghgfn","FireOrk", 40));
+            bot.Deck.Add(new Card("hfghfhf","WaterSpell", 35));
 
 
             int input = 9;
@@ -46,18 +90,18 @@ namespace SWEN1.MTCG
                         
                         var game = new Match(userTmp, enemyTmp);
                         
-                        while (game.Round <= 100 && userTmp.DeckCollection.Count > 0 && enemyTmp.DeckCollection.Count > 0)
+                        while (game.Round <= 100 && userTmp.Deck.Count > 0 && enemyTmp.Deck.Count > 0)
                         {
                             game.BattleAction();
                         }
         
-                        if (userTmp.DeckCollection.Count <= 0)
+                        if (userTmp.Deck.Count <= 0)
                         {
                             Console.WriteLine($"{bot.Username} won the game!");
                             bot.IncreWins();
                             user.IncreLosses();
                         }
-                        else if (enemyTmp.DeckCollection.Count <= 0)
+                        else if (enemyTmp.Deck.Count <= 0)
                         {
                             Console.WriteLine($"{user.Username} won the game!");
                             user.IncreWins();
@@ -84,15 +128,30 @@ namespace SWEN1.MTCG
                 }
                 
             }
-        
-        }
-        
 
+        }
         private static string EnterCredentials(string message)
         {
             Console.Write($"{message}");
             
             var input = Console.ReadLine();
+            return input;
+        }
+        
+        public static int LoginOrRegister()
+        {
+            var input = 9;
+            Console.Write("\n1. Sign Up\n" +
+                          "2. Login\n" +
+                          "Choose one menu point: ");
+            
+            while (input is < 1 or > 2)
+            {
+                if (!int.TryParse(Console.ReadLine(), out input) && input is < 1 or > 2) {
+                    Console.Write("Unknown entry! Try again: ");
+                }
+            }
+
             return input;
         }
         
