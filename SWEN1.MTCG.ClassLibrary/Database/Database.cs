@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Npgsql;
 
 namespace SWEN1.MTCG.ClassLibrary
@@ -57,8 +58,9 @@ namespace SWEN1.MTCG.ClassLibrary
             Console.WriteLine("You are now registered!");
             return true;
         }
-        public void LoginUser(string _username, string _password)
+        public Object[] LoginUser(string _username, string _password)
         {
+            Object[] credentials = new object[3];
             con.Open();
             const string sql = "SELECT u_id, u_username, u_coins FROM Usertable WHERE u_username = :u_username AND u_password = :u_password";
             var cmd = new NpgsqlCommand(sql, con);
@@ -71,32 +73,82 @@ namespace SWEN1.MTCG.ClassLibrary
 
             if (rdr.HasRows)
             {
-                while (rdr.Read())
-                {
-                    Console.WriteLine("{0} {1} {2}", rdr.GetInt32(0),
-                        rdr.GetString(1), rdr.GetInt32(2) );
+                var count = rdr.FieldCount;
+                while(rdr.Read()) {
+                    for(int i = 0 ; i < count ; i++) {
+                        credentials[i] = rdr.GetValue(i);
+                    }
                 }
                 con.Close();
+                return credentials;
             }
             Console.WriteLine("No rows found.");
             con.Close();
+            return null;
+        }
+
+        public void GetAllData()
+        {
+            con.Open();
+            const string sql = "SELECT * FROM Usertable";
+            var cmd = new NpgsqlCommand(sql, con);
+            
+            var rdr = cmd.ExecuteReader();
+
+            if (rdr.HasRows)
+            {
+                int count = rdr.FieldCount;
+                while(rdr.Read()) {
+                    for(int i = 0 ; i < count ; i++) {
+                        Console.WriteLine(rdr.GetValue(i));
+                    }
+                }
+                con.Close();
+            }
         }
         
-        public void InsertNewCardStack(int id, string _id, string _cardName, int _dmg)
+        public void InsertNewCardStack(int uid, string cid, string _cardName, int _dmg)
         {
             con.Open();
             const string sql = "INSERT INTO cardtable(u_id, c_id, c_name, c_damage, c_indeck)" +
                                "VALUES (:u_id, :c_id, :c_name, :c_damage, :c_indeck)";
             var cmd = new NpgsqlCommand(sql, con);
             
-            cmd.Parameters.AddWithValue(":u_id", id);
-            cmd.Parameters.AddWithValue(":c_id", _id);
+            cmd.Parameters.AddWithValue(":u_id", uid);
+            cmd.Parameters.AddWithValue(":c_id", cid);
             cmd.Parameters.AddWithValue(":c_name", _cardName);
             cmd.Parameters.AddWithValue(":c_damage", _dmg);
             cmd.Parameters.AddWithValue(":c_indeck", false);
             cmd.Prepare();
             cmd.ExecuteNonQuery();
             con.Close();
+        }
+        
+        public List<ICard> GetDeck(int uid)
+        {
+            List<ICard> deck = new List<ICard>();
+            
+            con.Open();
+            const string sql = "SELECT c_id, c_name, c_damage FROM Cardtable WHERE u_id = :u_id AND c_indeck = :c_indeck";
+            var cmd = new NpgsqlCommand(sql, con);
+            
+            cmd.Parameters.AddWithValue(":u_id", uid);
+            cmd.Parameters.AddWithValue(":c_indeck", true);
+            cmd.Prepare();
+            
+            var rdr = cmd.ExecuteReader();
+            
+            while(rdr.Read())
+            {
+                var id = rdr.GetString(0);
+                var name = rdr.GetString(1);
+                var damage = rdr.GetInt32(2);
+                
+                deck.Add(new Card(id, name, damage));
+            }
+            
+            con.Close();
+            return deck;
         }
         
         public bool CheckUserAlreadyExist(string _username)

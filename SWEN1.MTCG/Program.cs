@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
 using SWEN1.MTCG.ClassLibrary;
-using Npgsql;
 
 namespace SWEN1.MTCG
 {
@@ -11,15 +8,15 @@ namespace SWEN1.MTCG
         static void Main(string[] args)
         {
             Database database = new Database();
-            
+           
             Console.WriteLine("Welcome to your Monster Trading Card Game!");
             Console.WriteLine("---------------------------------------");
 
-            int id = -1;
+            Object[] credentials = null;
             
             User user = null;
 
-            while (id == -1)
+            while (credentials == null)
             {
                 int input1 = LoginOrRegister();
                 switch (input1)
@@ -57,25 +54,18 @@ namespace SWEN1.MTCG
                                 Console.WriteLine($"Login canceled!");
                                 break;
                             }
-                            database.LoginUser(username, password);
+                            credentials = database.LoginUser(username, password);
                             
-                            /*if (id != -1)
+                            if (credentials != null)
                             {
-                                user = new User(id, username, password);
+                                user = new User((int)credentials[0], (string)credentials[1]);
                                 break;
-                            }*/
+                            }
                         }
                         break;
                 }
             }
-
-            var bot = new User(2,"Marc");
-            bot.Deck.Add(new Card("gfjgfmjg","Wizard", 45));
-            bot.Deck.Add(new Card("jfgjgfjrt","WaterDragon", 45));
-            bot.Deck.Add(new Card("hfghgfn","FireOrk", 40));
-            bot.Deck.Add(new Card("hfghfhf","WaterSpell", 35));
-
-
+            
             int input = 9;
             
             while (input != 5)
@@ -85,8 +75,13 @@ namespace SWEN1.MTCG
                 {
                     case 1:
                     {
+                        var bot = new User(2,"Marc");
+
                         var userTmp = new User(user);
+                        userTmp.Deck = database.GetDeck(userTmp.ID);
+                        
                         var enemyTmp = new User(bot);
+                        enemyTmp.Deck = database.GetDeck(enemyTmp.ID);
                         
                         var game = new Match(userTmp, enemyTmp);
                         
@@ -126,10 +121,9 @@ namespace SWEN1.MTCG
                         user.OutPutWinRate();
                         break;
                 }
-                
             }
-
         }
+            
         private static string EnterCredentials(string message)
         {
             Console.Write($"{message}");
