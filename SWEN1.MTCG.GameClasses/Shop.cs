@@ -46,7 +46,7 @@ namespace SWEN1.MTCG.ClassLibrary
         }
 
         // temporarily add on deck
-        public static void BuyPackage(User user)
+        /*public static void BuyPackage(User user)
         {
             Database database = new Database();
             
@@ -62,6 +62,6 @@ namespace SWEN1.MTCG.ClassLibrary
                 database.InsertNewCardStack(user.ID, rdID, rdCardName, rdDmg);
                 Console.WriteLine($"- {rdCardName} ({rdDmg})");
             }
-        }
+        }*/
     }
 }

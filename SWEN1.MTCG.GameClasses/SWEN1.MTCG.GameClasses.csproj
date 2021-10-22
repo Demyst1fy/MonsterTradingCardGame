@@ -2,10 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
+        <RootNamespace>SWEN1.MTCG.ClassLibrary</RootNamespace>
     </PropertyGroup>
-
-    <ItemGroup>
-      <PackageReference Include="Npgsql" Version="6.0.0-rc.2" />
-    </ItemGroup>
-
+    
 </Project>

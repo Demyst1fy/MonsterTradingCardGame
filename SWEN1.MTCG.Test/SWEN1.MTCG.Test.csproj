@@ -15,7 +15,11 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\SWEN1.MTCG.ClassLibrary\SWEN1.MTCG.ClassLibrary.csproj" />
+      <ProjectReference Include="..\SWEN1.MTCG.GameClasses\SWEN1.MTCG.GameClasses.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Server.Test" />
     </ItemGroup>
 
 </Project>

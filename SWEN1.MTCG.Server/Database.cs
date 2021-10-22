@@ -23,23 +23,11 @@ namespace SWEN1.MTCG.ClassLibrary
                                        $"Database={dbname}");
         }
 
-        public bool RegisterUser(string[] userData)
+        public bool RegisterUser(string _username, string _password)
         {
-            var username = userData[0];
-            var password1 = userData[1];
-            var password2 = userData[2];
-
-            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password1) || string.IsNullOrEmpty(password2))
-            {
-                Console.WriteLine("Fields must not be empty!");
-                return false;
-            } if (CheckUserAlreadyExist(username))
+            if (CheckUserAlreadyExist(_username))
             {
                 Console.WriteLine("User already exists!");
-                return false;
-            } if (password1 != password2)
-            {
-                Console.WriteLine("Passwort confirmation does not match!");
                 return false;
             }
             
@@ -49,18 +37,17 @@ namespace SWEN1.MTCG.ClassLibrary
             
             var cmd = new NpgsqlCommand(sql, con);
             
-            cmd.Parameters.AddWithValue(":u_username", username);
-            cmd.Parameters.AddWithValue(":u_password", password1);
+            cmd.Parameters.AddWithValue(":u_username", _username);
+            cmd.Parameters.AddWithValue(":u_password", _password);
             cmd.Prepare();
             cmd.ExecuteNonQuery();
             con.Close();
             
-            Console.WriteLine("You are now registered!");
             return true;
         }
-        public Object[] LoginUser(string _username, string _password)
+        public bool LoginUser(string _username, string _password)
         {
-            Object[] credentials = new object[3];
+            bool valid = false;
             con.Open();
             const string sql = "SELECT u_id, u_username, u_coins FROM Usertable WHERE u_username = :u_username AND u_password = :u_password";
             var cmd = new NpgsqlCommand(sql, con);
@@ -73,18 +60,10 @@ namespace SWEN1.MTCG.ClassLibrary
 
             if (rdr.HasRows)
             {
-                var count = rdr.FieldCount;
-                while(rdr.Read()) {
-                    for(int i = 0 ; i < count ; i++) {
-                        credentials[i] = rdr.GetValue(i);
-                    }
-                }
-                con.Close();
-                return credentials;
+                valid = true;
             }
-            Console.WriteLine("No rows found.");
             con.Close();
-            return null;
+            return valid;
         }
 
         public void GetAllData()
@@ -169,11 +148,6 @@ namespace SWEN1.MTCG.ClassLibrary
             con.Close();
             
             return result;
-        }
-        
-        public void Reset()
-        {
-            con.Close();
         }
     }
 }

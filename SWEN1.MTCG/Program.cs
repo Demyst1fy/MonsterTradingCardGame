@@ -7,7 +7,7 @@ namespace SWEN1.MTCG
     {
         static void Main(string[] args)
         {
-            Database database = new Database();
+            /*Database database = new Database();
            
             Console.WriteLine("Welcome to your Monster Trading Card Game!");
             Console.WriteLine("---------------------------------------");
@@ -19,31 +19,33 @@ namespace SWEN1.MTCG
             while (credentials == null)
             {
                 int input1 = LoginOrRegister();
+                string username = "";
+                string password1 = "";
+                string password2 = "";
+                string password = "";
                 switch (input1)
                 {
-                    case 1: 
-                        var userdataReg = new string[3];
+                    case 1:
+                        bool valid = false;
 
-                        while (userdataReg[0] != "0" && userdataReg[1] != "0" && userdataReg[2] != "0")
+                        while (!valid)
                         {
-                            userdataReg[0] = EnterCredentials("New Username: ");
-                            userdataReg[1] = EnterCredentials("Password: ");
-                            userdataReg[2] = EnterCredentials("Confirm Password: ");
-                        
-                            if (userdataReg[0] == "0" || userdataReg[1] == "0" || userdataReg[2] == "0")
+                            username = EnterCredentials("New Username: ");
+                            password1 = EnterCredentials("Password: ");
+                            password2 = EnterCredentials("Confirm Password: ");
+
+                            if (password1 != password2)
                             {
-                                Console.WriteLine($"Registration canceled!");
-                                break;
+                                Console.WriteLine("Passwort confirmation does not match!");
                             }
-                            if (database.RegisterUser(userdataReg))
+                            else
                             {
-                                break;
+                                valid = database.RegisterUser(username, password);
                             }
                         }
                         break;
                     case 2:
-                        string username = "", password = "";
-                        
+
                         while (username != "0" && password != "0")
                         {
                             username = EnterCredentials("Username: ");
@@ -115,7 +117,7 @@ namespace SWEN1.MTCG
                         break;
                     }
                     case 2:
-                        Shop.BuyPackage(user);
+                        //Shop.BuyPackage(user);
                         break;
                     case 3:
                         user.OutPutWinRate();
@@ -166,7 +168,7 @@ namespace SWEN1.MTCG
                 }
             }
 
-            return input;
+            return input;*/
         }
     }
 }
