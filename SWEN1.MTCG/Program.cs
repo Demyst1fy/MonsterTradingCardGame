@@ -111,7 +111,7 @@ namespace SWEN1.MTCG
                             bot.IncreDraws();
                         }
         
-                        Console.WriteLine("\nWon rounds:");
+                        Console.WriteLine("{Environment.NewLine}Won rounds:");
                         Console.WriteLine($"{user.Username}: {game.Player1RoundWon}");
                         Console.WriteLine($"{bot.Username}: {game.Player2RoundWon}");
                         break;
@@ -137,8 +137,8 @@ namespace SWEN1.MTCG
         public static int LoginOrRegister()
         {
             var input = 9;
-            Console.Write("\n1. Sign Up\n" +
-                          "2. Login\n" +
+            Console.Write("{Environment.NewLine}1. Sign Up{Environment.NewLine}" +
+                          "2. Login{Environment.NewLine}" +
                           "Choose one menu point: ");
             
             while (input is < 1 or > 2)
@@ -154,11 +154,11 @@ namespace SWEN1.MTCG
         public static int UserInput()
         {
             var input = 9;
-            Console.Write("\n1. Play one ranked match\n" +
-                          "2. Buy Packages (5 Cards) for 5 coins\n" +
-                          "3. Manage your cards\n" +
-                          "4. Deal your Trade\n" +
-                          "5. Quit\n" +
+            Console.Write("{Environment.NewLine}1. Play one ranked match{Environment.NewLine}" +
+                          "2. Buy Packages (5 Cards) for 5 coins{Environment.NewLine}" +
+                          "3. Manage your cards{Environment.NewLine}" +
+                          "4. Deal your Trade{Environment.NewLine}" +
+                          "5. Quit{Environment.NewLine}" +
                           "Choose one menu point: ");
             
             while (input is < 1 or > 5)

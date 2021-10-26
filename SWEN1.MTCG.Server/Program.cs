@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Text;
 
-namespace ConsoleApp1
+namespace SWEN1.MTCG.Server
 {
     class Program
     {

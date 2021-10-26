@@ -1,42 +1,20 @@
-﻿using System;
-using System.Text;
-
-namespace ConsoleApp1
+﻿namespace SWEN1.MTCG.Server
 {
     public class Response
     {
-        private string Version { get; } = "HTTP/1.1";
-        private int Status { get; }
-        private string Message { get; }
-        private string ContentType { get; }
-        private int ContentLength { get; }
-        private string Body { get; }
-        public byte[] Data { get; set; }
+        public int Status { get; }
+        public string Message { get; }
+        public string ContentType { get; }
+        public int ContentLength { get; }
+        public string Body { get; }
 
-        private Response()
-        {
-            
-        }
         public Response(int status, string message, string body)
         {
             Status = status;
             Message = message;
-            ContentType = "text/plain";
+            ContentType = "application/json";
             ContentLength = body.Length;
             Body = body;
-        }
-        
-        
-        public static Response ProcessRequest(string request)
-        {
-            Console.WriteLine($"Request:{request}");
-
-            var response = ServiceHandler.HandleRequest(request);
-            
-            var responseText = $"({response.Status} {response.Message}): {response.Body}";
-            var responseData = Encoding.UTF8.GetBytes(responseText);
-            response.Data = responseData;
-            return response;
         }
     }
 }

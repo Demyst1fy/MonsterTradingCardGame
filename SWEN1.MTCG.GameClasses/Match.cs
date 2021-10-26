@@ -37,7 +37,7 @@ namespace SWEN1.MTCG.ClassLibrary
                 Console.WriteLine($"- {player1Card.Name} ({player1Card.Damage} Damage)");
             }
             
-            Console.WriteLine($"\n{Player2.Username}'s DeckList:");
+            Console.WriteLine($"{Environment.NewLine}{Player2.Username}'s DeckList:");
             foreach (var player2Card in enemyCards)
             {
                 Console.WriteLine($"- {player2Card.Name} ({player2Card.Damage} Damage)");
@@ -45,9 +45,9 @@ namespace SWEN1.MTCG.ClassLibrary
             
             //System.Threading.Thread.Sleep(1000);
             
-            Console.WriteLine($"\nRound {Round}");
+            Console.WriteLine($"{Environment.NewLine}Round {Round}");
             Console.WriteLine($"{Player1.Username}: {myCard.Name} ({myCard.Damage} Damage) " +
-                              $"VS {Player2.Username}: {enemyCard.Name} ({enemyCard.Damage} Damage)\n");
+                              $"VS {Player2.Username}: {enemyCard.Name} ({enemyCard.Damage} Damage){Environment.NewLine}");
 
             //System.Threading.Thread.Sleep(1000);
             
@@ -69,20 +69,20 @@ namespace SWEN1.MTCG.ClassLibrary
                 {
                     damageAdj1 = myCard.CompareElement(enemyCard.Element);
                     damageAdj2 = enemyCard.CompareElement(myCard.Element);
-                    Console.WriteLine($"=> {myCard.Damage} VS {enemyCard.Damage} -> {damageAdj1} VS {damageAdj2}\n");
+                    Console.WriteLine($"=> {myCard.Damage} VS {enemyCard.Damage} -> {damageAdj1} VS {damageAdj2}{Environment.NewLine}");
                 }
             }
 
             if (damageAdj1 > damageAdj2 || monsterStatus2)
             {
-                Console.WriteLine($"=> {myCard.Name} wins.\n");
+                Console.WriteLine($"=> {myCard.Name} wins.{Environment.NewLine}");
                 myCards.Add(enemyCard);
                 enemyCards.Remove(enemyCard);
                 Player1RoundWon++;
             }
             else if (damageAdj1 < damageAdj2 || monsterStatus1)
             {
-                Console.WriteLine($"=> {enemyCard.Name} wins.\n");
+                Console.WriteLine($"=> {enemyCard.Name} wins.{Environment.NewLine}");
                 enemyCards.Add(myCard);
                 myCards.Remove(myCard);
                 Player2RoundWon++;
@@ -90,10 +90,9 @@ namespace SWEN1.MTCG.ClassLibrary
             
             else
             {
-                Console.WriteLine("Draw (no action)\n");
+                Console.WriteLine($"Draw (no action){Environment.NewLine}");
             }
             
-            //System.Threading.Thread.Sleep(2000);
             Round++;
         }
     }

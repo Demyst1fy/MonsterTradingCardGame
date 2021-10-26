@@ -7,11 +7,11 @@ namespace SWEN1.MTCG.ClassLibrary
     {
         public int ID { get; }
         public string Username { get; }
-        public string AuthToken { get; private set; }
         public List<ICard> Deck { get; set; }
         public int Wins { get; private set; }
         public int Losses { get; private set; }
         public int Draws { get; private set; }
+        public int Elo { get; private set; }
 
         public User(IUser previousPerson)
         {
