@@ -13,11 +13,11 @@ namespace SWEN1.MTCG.ClassLibrary
         private readonly string dbpassword = "postgres";
         private readonly string dbname = "mtcg";
         
-        public static NpgsqlConnection con;
+        public static NpgsqlConnection Con;
         
         public Database()
         {
-            con = new NpgsqlConnection($"Host={host};" +
+            Con = new NpgsqlConnection($"Host={host};" +
                                        $"Port={Convert.ToString(port)};" +
                                        $"Username={dbusername};" +
                                        $"Password={dbpassword};" +
@@ -33,38 +33,38 @@ namespace SWEN1.MTCG.ClassLibrary
             
             string fullname = char.ToUpper(username[0]) + username.Substring(1);
             
-            con.Open();
+            Con.Open();
             const string sql = "INSERT INTO usertable(u_username, u_password, u_fullname)" +
                                "VALUES (:u_username, :u_password, :u_fullname)";
             
-            var cmd = new NpgsqlCommand(sql, con);
+            var cmd = new NpgsqlCommand(sql, Con);
             
             cmd.Parameters.AddWithValue(":u_username", username);
             cmd.Parameters.AddWithValue(":u_password", password);
             cmd.Parameters.AddWithValue(":u_fullname", fullname);
             cmd.Prepare();
             cmd.ExecuteNonQuery();
-            con.Close();
+            Con.Close();
             
-            con.Open();
+            Con.Open();
             const string sql2 = "INSERT INTO statstable(u_username)" +
                                "VALUES (:u_username)";
             
-            var cmd2 = new NpgsqlCommand(sql2, con);
+            var cmd2 = new NpgsqlCommand(sql2, Con);
             
             cmd2.Parameters.AddWithValue(":u_username", username);
             cmd2.Prepare();
             cmd2.ExecuteNonQuery();
-            con.Close();
+            Con.Close();
             
             return true;
         }
         
         public bool LoginUser(string username, string password)
         {
-            con.Open();
+            Con.Open();
             const string sql = "SELECT u_id FROM usertable WHERE u_username = :u_username AND u_password = :u_password";
-            var cmd = new NpgsqlCommand(sql, con);
+            var cmd = new NpgsqlCommand(sql, Con);
             
             cmd.Parameters.AddWithValue(":u_username", username);
             cmd.Parameters.AddWithValue(":u_password", password);
@@ -78,7 +78,7 @@ namespace SWEN1.MTCG.ClassLibrary
                 rdr.Read();
                 int userId = rdr.GetInt32(0);
                 rdr.Close();
-                con.Close();
+                Con.Close();
 
                 string sql2;
                 if (!CheckTokenIDAlreadyExist(userId))
@@ -89,8 +89,8 @@ namespace SWEN1.MTCG.ClassLibrary
                 {
                     sql2 = "UPDATE tokentable SET t_token = :t_token WHERE u_id = :u_id";
                 }
-                con.Open();
-                var cmd2 = new NpgsqlCommand(sql2, con);
+                Con.Open();
+                var cmd2 = new NpgsqlCommand(sql2, Con);
                 cmd2.Parameters.AddWithValue(":u_id", userId);
                 cmd2.Parameters.AddWithValue(":t_token","Basic " + username + "-mtcgToken");
                 
@@ -98,15 +98,15 @@ namespace SWEN1.MTCG.ClassLibrary
                 cmd2.ExecuteNonQuery();
                 valid = true;
             }
-            con.Close();
+            Con.Close();
             return valid;
         }
         
         public UserData GetUserData(string username)
         {
-            con.Open();
+            Con.Open();
             const string sql = "SELECT u_coins, u_fullname, u_bio, u_image FROM usertable WHERE u_username = :u_username";
-            var cmd = new NpgsqlCommand(sql, con);
+            var cmd = new NpgsqlCommand(sql, Con);
             cmd.Parameters.AddWithValue(":u_username", username);
 
             var rdr = cmd.ExecuteReader();
@@ -123,29 +123,29 @@ namespace SWEN1.MTCG.ClassLibrary
                 userData = new UserData(username, coins, fullname, bio, image);
             }
             
-            con.Close();
+            Con.Close();
             return userData;
         }
         
         public void EditUserData(string username, string fullname, string bio, string image)
         {
-            con.Open();
+            Con.Open();
             const string sql = "UPDATE usertable SET u_fullname = :u_fullname, u_bio = :u_bio, u_image = :u_image WHERE u_username = :u_username";
-            var cmd = new NpgsqlCommand(sql, con);
+            var cmd = new NpgsqlCommand(sql, Con);
             cmd.Parameters.AddWithValue(":u_fullname", fullname);
             cmd.Parameters.AddWithValue(":u_bio", bio);
             cmd.Parameters.AddWithValue(":u_image", image);
             cmd.Parameters.AddWithValue(":u_username", username);
             cmd.Prepare();
             cmd.ExecuteNonQuery();
-            con.Close();
+            Con.Close();
         }
 
         public void GetAllData()
         {
-            con.Open();
+            Con.Open();
             const string sql = "SELECT * FROM Usertable";
-            var cmd = new NpgsqlCommand(sql, con);
+            var cmd = new NpgsqlCommand(sql, Con);
             
             var rdr = cmd.ExecuteReader();
 
@@ -158,16 +158,16 @@ namespace SWEN1.MTCG.ClassLibrary
                     }
                 }
                 rdr.Close();
-                con.Close();
+                Con.Close();
             }
         }
         
         public void InsertNewCardStack(int uid, string cid, string _cardName, int _dmg)
         {
-            con.Open();
+            Con.Open();
             const string sql = "INSERT INTO cardtable(u_id, c_id, c_name, c_damage, c_indeck)" +
                                "VALUES (:u_id, :c_id, :c_name, :c_damage, :c_indeck)";
-            var cmd = new NpgsqlCommand(sql, con);
+            var cmd = new NpgsqlCommand(sql, Con);
             
             cmd.Parameters.AddWithValue(":u_id", uid);
             cmd.Parameters.AddWithValue(":c_id", cid);
@@ -176,14 +176,14 @@ namespace SWEN1.MTCG.ClassLibrary
             cmd.Parameters.AddWithValue(":c_indeck", false);
             cmd.Prepare();
             cmd.ExecuteNonQuery();
-            con.Close();
+            Con.Close();
         }
 
         public bool ConfigureDeck(string[] chosenCardIDs, string username)
         {
-            con.Open();
+            Con.Open();
             const string sql = "SELECT c_id FROM cardtable WHERE u_username = :u_username";
-            var cmd = new NpgsqlCommand(sql, con);
+            var cmd = new NpgsqlCommand(sql, Con);
             
             cmd.Parameters.AddWithValue(":u_username", username);
             cmd.Prepare();
@@ -198,7 +198,7 @@ namespace SWEN1.MTCG.ClassLibrary
             }
 
             rdr.Close();
-            con.Close();
+            Con.Close();
             
             bool[] found = { false, false, false, false };
             
@@ -219,28 +219,28 @@ namespace SWEN1.MTCG.ClassLibrary
                 return false;
             }
 
-            con.Open();
+            Con.Open();
             const string sql2 = "UPDATE cardtable SET c_indeck = :c_indeck WHERE u_username = :u_username";
-            var cmd2 = new NpgsqlCommand(sql2, con);
+            var cmd2 = new NpgsqlCommand(sql2, Con);
             
             cmd2.Parameters.AddWithValue(":c_indeck", false);
             cmd2.Parameters.AddWithValue(":u_username", username);
             cmd2.Prepare();
             cmd2.ExecuteNonQuery();
-            con.Close();
+            Con.Close();
 
             for (var i = 0; i < chosenCardIDs.Length; i++)
             {
-                con.Open();
+                Con.Open();
                 const string sql3 = "UPDATE cardtable SET c_indeck = :c_indeck WHERE u_username = :u_username AND c_id = :c_id";
-                var cmd3 = new NpgsqlCommand(sql3, con);
+                var cmd3 = new NpgsqlCommand(sql3, Con);
             
                 cmd3.Parameters.AddWithValue(":c_indeck", true);
                 cmd3.Parameters.AddWithValue(":u_username", username);
                 cmd3.Parameters.AddWithValue(":c_id", chosenCardIDs[i]);
                 cmd3.Prepare();
                 cmd3.ExecuteNonQuery();
-                con.Close();
+                Con.Close();
             }
 
             return true;
@@ -248,9 +248,9 @@ namespace SWEN1.MTCG.ClassLibrary
         
         public List<ICard> GetUserStack(string username)
         {
-            con.Open();
+            Con.Open();
             const string sql = "SELECT c_id, c_name, c_damage FROM cardtable WHERE u_username = :u_username";
-            var cmd = new NpgsqlCommand(sql, con);
+            var cmd = new NpgsqlCommand(sql, Con);
             
             cmd.Parameters.AddWithValue(":u_username", username);
             cmd.Prepare();
@@ -267,14 +267,14 @@ namespace SWEN1.MTCG.ClassLibrary
                 stack.Add(new Card(id, name, damage));
             }
             
-            con.Close();
+            Con.Close();
             return stack;
         }
         public List<ICard> GetUserDeck(string username)
         {
-            con.Open();
+            Con.Open();
             const string sql = "SELECT c_id, c_name, c_damage FROM cardtable WHERE u_username = :u_username AND c_indeck = :c_indeck";
-            var cmd = new NpgsqlCommand(sql, con);
+            var cmd = new NpgsqlCommand(sql, Con);
             
             cmd.Parameters.AddWithValue(":u_username", username);
             cmd.Parameters.AddWithValue(":c_indeck", true);
@@ -292,15 +292,15 @@ namespace SWEN1.MTCG.ClassLibrary
                 deck.Add(new Card(id, name, damage));
             }
             
-            con.Close();
+            Con.Close();
             return deck;
         }
 
         public Stats GetUserStats(string username)
         {
-            con.Open();
+            Con.Open();
             const string sql = "SELECT s_wins, s_losses, s_draws, s_elo FROM statstable WHERE u_username = :u_username";
-            var cmd = new NpgsqlCommand(sql, con);
+            var cmd = new NpgsqlCommand(sql, Con);
             
             cmd.Parameters.AddWithValue(":u_username", username);
             cmd.Prepare();
@@ -325,15 +325,15 @@ namespace SWEN1.MTCG.ClassLibrary
                 stats = new Stats(username, wins, losses, draws, elo, winRate);
             }
             
-            con.Close();
+            Con.Close();
             return stats;
         }
         
         public List<Stats> GetScoreBoard()
         {
-            con.Open();
+            Con.Open();
             const string sql = "SELECT * FROM statstable";
-            var cmd = new NpgsqlCommand(sql, con);
+            var cmd = new NpgsqlCommand(sql, Con);
             cmd.Prepare();
             
             var rdr = cmd.ExecuteReader();
@@ -357,15 +357,97 @@ namespace SWEN1.MTCG.ClassLibrary
                 scoreBoard.Add(new Stats(user, wins, losses, draws, elo, winRate));
             }
             
-            con.Close();
+            Con.Close();
             return scoreBoard;
         }
 
+        public bool CreateTradingDeal(string username, string tradeId, string cardId, string searchType, double minimumDamage)
+        {
+            Con.Open();
+            const string sql = "SELECT * FROM cardtable WHERE c_id = :c_id AND c_indeck = :c_indeck";
+            var cmd = new NpgsqlCommand(sql, Con);
+            
+            cmd.Parameters.AddWithValue(":c_id", cardId);
+            cmd.Parameters.AddWithValue(":c_indeck", false);
+            cmd.Prepare();
+            
+            var rdr = cmd.ExecuteReader();
+
+            if (!rdr.HasRows)
+            {
+                Con.Close();
+                return false;
+            }
+
+            Con.Close();
+            
+            Con.Open();
+            const string sql2 = "INSERT INTO tradetable(u_username, tr_id, c_id, tr_searchtype, tr_minimumdamage)" +
+                               "VALUES (:u_username, :tr_id, :c_id, :tr_searchtype, :tr_minimumdamage)";
+            
+            var cmd2 = new NpgsqlCommand(sql2, Con);
+            
+            cmd2.Parameters.AddWithValue(":u_username", username);
+            cmd2.Parameters.AddWithValue(":tr_id", tradeId);
+            cmd2.Parameters.AddWithValue(":c_id", cardId);
+            cmd2.Parameters.AddWithValue(":tr_searchtype", searchType);
+            cmd2.Parameters.AddWithValue(":tr_minimumdamage", minimumDamage);
+            cmd2.Prepare();
+            cmd2.ExecuteNonQuery();
+            Con.Close();
+            
+            return true;
+        }
+        public List<Trade> GetTradingDeals()
+        {
+            Con.Open();
+            const string sql = "SELECT * FROM tradetable";
+            var cmd = new NpgsqlCommand(sql, Con);
+            cmd.Prepare();
+            
+            var rdr = cmd.ExecuteReader();
+            
+            List<Trade> tradingDeals = new List<Trade>();
+            
+            while(rdr.Read())
+            {
+                var tradeId = rdr.GetString(0);
+                var cardId = rdr.GetString(1);
+                var searchType = rdr.GetString(2);
+                var minimumDamage = rdr.GetDouble(3);
+                var username = rdr.GetString(4);
+                
+                tradingDeals.Add(new Trade(username, tradeId, cardId, searchType, minimumDamage));
+            }
+            
+            Con.Close();
+            return tradingDeals;
+        }
+        public bool DeleteTradingDeal(string tradeId, string username)
+        {
+            Con.Open();
+            const string sql = "DELETE FROM tradetable WHERE tr_id = :tr_id AND u_username = :u_username";
+            
+            var cmd = new NpgsqlCommand(sql, Con);
+            
+            cmd.Parameters.AddWithValue(":tr_id", tradeId);
+            cmd.Parameters.AddWithValue(":u_username", username);
+            cmd.Prepare();
+            int result = cmd.ExecuteNonQuery();
+            Con.Close();
+            
+            if (result == -1)
+            {
+                return false;
+            }
+
+            return true;
+        }
         public bool CheckUserAlreadyExist(string _username)
         {
-            con.Open();
+            Con.Open();
             const string sql = "SELECT u_username FROM usertable WHERE u_username = :u_username";
-            var cmd = new NpgsqlCommand(sql, con);
+            var cmd = new NpgsqlCommand(sql, Con);
 
             cmd.Parameters.AddWithValue(":u_username", _username);
             cmd.Prepare();
@@ -375,16 +457,16 @@ namespace SWEN1.MTCG.ClassLibrary
             
             var result = rdr.Read();
             
-            con.Close();
+            Con.Close();
             
             return result;
         }
         
         public bool CheckTokenIDAlreadyExist(int _uid)
         {
-            con.Open();
+            Con.Open();
             const string sql = "SELECT t_id FROM tokentable WHERE u_id = :u_id";
-            var cmd = new NpgsqlCommand(sql, con);
+            var cmd = new NpgsqlCommand(sql, Con);
 
             cmd.Parameters.AddWithValue(":u_id", _uid);
             cmd.Prepare();
@@ -394,7 +476,7 @@ namespace SWEN1.MTCG.ClassLibrary
             
             var result = rdr.Read();
             
-            con.Close();
+            Con.Close();
             
             return result;
         }
@@ -406,9 +488,9 @@ namespace SWEN1.MTCG.ClassLibrary
                 return null;
             }
             
-            con.Open();
+            Con.Open();
             string sql = "SELECT usertable.u_username FROM usertable INNER JOIN tokentable ON usertable.u_id = tokentable.u_id WHERE tokentable.t_token = :t_token";
-            var cmd = new NpgsqlCommand(sql, con);
+            var cmd = new NpgsqlCommand(sql, Con);
             
             cmd.Parameters.AddWithValue(":t_token", authToken);
             cmd.Prepare();
@@ -423,7 +505,7 @@ namespace SWEN1.MTCG.ClassLibrary
                 username = rdr.GetString(0);
             }
             
-            con.Close();
+            Con.Close();
             
             return username;
         }

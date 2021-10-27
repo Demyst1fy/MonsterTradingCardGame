@@ -64,9 +64,13 @@ public class HTTPServer
             
             Response response = ServiceHandler.HandleRequest(request);
 
-            var responseText = $"({response.Status} {response.Message}): {Environment.NewLine}{response.Body}{Environment.NewLine}";
+            StringBuilder responseText = new StringBuilder();
+            responseText.Append($"Status: {response.Status} {response.Message} {Environment.NewLine}");
+            responseText.Append($"Mimetype: {response.MimeType} {Environment.NewLine}");
+            responseText.Append($"Content-Length: {response.ContentLength} {Environment.NewLine}");
+            responseText.Append($"Response-Body: {response.Body} {Environment.NewLine}");
 
-            byte[] data = Encoding.UTF8.GetBytes(responseText);
+            byte[] data = Encoding.UTF8.GetBytes(responseText.ToString());
             stream.Write(data, 0, data.Length);
         }
     }
