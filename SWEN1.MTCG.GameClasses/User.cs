@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using SWEN1.MTCG.GameClasses.Interfaces;
 
-namespace SWEN1.MTCG.ClassLibrary
+namespace SWEN1.MTCG.GameClasses
 {
     public class User : IUser
     {

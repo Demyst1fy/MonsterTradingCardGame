@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SWEN1.MTCG.ClassLibrary
+namespace SWEN1.MTCG.GameClasses.Interfaces
 {
     public interface IUser
     {

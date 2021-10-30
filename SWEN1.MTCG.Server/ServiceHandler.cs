@@ -4,17 +4,18 @@ using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
-using SWEN1.MTCG.ClassLibrary;
-using JsonSerializer = System.Text.Json.JsonSerializer;
+using SWEN1.MTCG.GameClasses.Interfaces;
+using SWEN1.MTCG.Server.DatabaseClasses;
+using SWEN1.MTCG.Server.Interfaces;
 
 namespace SWEN1.MTCG.Server
 {
-    public class ServiceHandler
+    public class ServiceHandler : IServiceHandler
     {
-        private static readonly object _lockObj = new();
-        private static Database db = new();
+        private readonly object _lockObj = new object();
+        private readonly IDatabase _db = new Database();
 
-        private static Request ParseRequest(string data)
+        private IRequest ParseRequest(string data)
         {
             if (string.IsNullOrEmpty(data))
             {
@@ -27,22 +28,11 @@ namespace SWEN1.MTCG.Server
             string[] partsFirstLine = firstLine.Split(' ');
             string method = partsFirstLine[0];
             string resource = partsFirstLine[1];
-            string version = partsFirstLine[2];
-            string contentType = "";
-            string contentLength = "";
             string authToken = "";
 
             foreach (var item in lines)
             {
                 string[] itemType = item.Split(": ");
-                if (itemType[0] == "Content-Type")
-                {
-                    contentType = itemType[1];
-                }
-                if (itemType[0] == "Content-Length")
-                {
-                    contentLength = itemType[1];
-                }
                 if (itemType[0] == "Authorization")
                 {
                     authToken = itemType[1];
@@ -50,16 +40,16 @@ namespace SWEN1.MTCG.Server
             }
 
             string[] tokens = data.Split(Environment.NewLine + Environment.NewLine);
+            
             string content = tokens[1];
-
             if (string.IsNullOrEmpty(authToken))
             {
-                return new Request(method, resource, version, contentType, contentLength, content);
+                return new Request(method, resource, content);
             }
-            return new Request(method, resource, version, contentType, contentLength, content, authToken);
+            return new Request(method, resource, content, authToken);
         }
         
-        private static string ParseQuery(string query)
+        private string ParseQuery(string query)
         {
             string[] lines = query.Split("/");
             if (lines.Length == 3)
@@ -70,10 +60,10 @@ namespace SWEN1.MTCG.Server
             return null;
         }
         
-        public static Response HandleRequest(string request)
+        public Response HandleRequest(string request)
         {
             Console.WriteLine($"Request:{request} {Environment.NewLine}");
-            Request parsedRequest = ParseRequest(request);
+            IRequest parsedRequest = ParseRequest(request);
 
             string subQuery = ParseQuery(parsedRequest.Query);
             string usernameFromAuthKey = null;
@@ -82,12 +72,12 @@ namespace SWEN1.MTCG.Server
             {
                 if (string.IsNullOrEmpty(request))
                 {
-                    return new Response(400, "Bad Request", "Empty request!");
+                    return new Response(400, "Empty request!");
                 }
 
                 if (!string.IsNullOrEmpty(parsedRequest.AuthToken))
                 {
-                    usernameFromAuthKey = db.GetUsernameFromAuthKey(parsedRequest.AuthToken);
+                    usernameFromAuthKey = _db.GetUsernameFromAuthKey(parsedRequest.AuthToken);
                 }
 
                 switch (parsedRequest.Method)
@@ -123,66 +113,56 @@ namespace SWEN1.MTCG.Server
                         }
                         else
                         {
-                            return new Response(404, "Not Found","The ressource is invalid!");
+                            return new Response(404,"The ressource is invalid!");
                         }
                     case "POST":
                         if (parsedRequest.Query == "/users")
                         {
-                            return HandleRegistration(parsedRequest);
+                            return HandleRegistration(parsedRequest.Content);
                         }
                         else if (parsedRequest.Query == "/sessions")
                         {
-                            return HandleLogin(parsedRequest);
+                            return HandleLogin(parsedRequest.Content);
                         }
                         else if (parsedRequest.Query == "/packages")
                         {
-
+                            // create package
                         }
                         else if (parsedRequest.Query == "/transactions/package")
                         {
-
+                            // acquire package
                         }
                         else if (parsedRequest.Query == "/battles")
                         {
-
+                            // battle
                         }
                         else if (parsedRequest.Query == "/tradings")
                         {
-                            return HandleCreateTradingDeal(usernameFromAuthKey, parsedRequest);
+                            return HandleCreateTradingDeal(usernameFromAuthKey, parsedRequest.Content);
                         }
                         else if (parsedRequest.Query == "/tradings/" + subQuery)
                         {
-
+                            return HandleProcessTradingDeal(subQuery, parsedRequest.Content, usernameFromAuthKey);
                         }
                         else
                         {
-                            return new Response(404, "Not Found","The ressource is invalid!");
+                            return new Response(404,"The ressource is invalid!");
                         }
 
                         break;
                     case "PUT":
                         if (parsedRequest.Query == "/deck")
                         {
-                            return HandleConfigureDeck(parsedRequest, usernameFromAuthKey);
+                            return HandleConfigureDeck(parsedRequest.Content, usernameFromAuthKey);
                         }
                         else if (parsedRequest.Query == "/users/" + subQuery)
                         {
-                            return HandleEditUserData(subQuery, parsedRequest, usernameFromAuthKey);
-                        }
-                        else if (parsedRequest.Query == "/packages")
-                        {
-
-                        }
-                        else if (parsedRequest.Query == "/transactions/package")
-                        {
-
+                            return HandleEditUserData(subQuery, parsedRequest.Content, usernameFromAuthKey);
                         }
                         else
                         {
-                            return new Response(404, "Not Found","The ressource is invalid!");
+                            return new Response(404,"The ressource is invalid!");
                         }
-
-                        break;
                     case "DELETE":
                         if (parsedRequest.Query == "/tradings/" + subQuery)
                         {
@@ -190,102 +170,98 @@ namespace SWEN1.MTCG.Server
                         }
                         else
                         {
-                            return new Response(404, "Not Found","The ressource is invalid!");
+                            return new Response(404,"The ressource is invalid!");
                         }
                     default:
-                        return new Response(405, "Method Not Allowed","Invalid method!");
+                        return new Response(405,"Invalid method!");
                 }
 
                 return null;
             }
         }
 
-        private static Response HandleRegistration(Request request)
+        private Response HandleRegistration(string requestContent)
         {
-            JObject json = JObject.Parse(request.Content);
+            JObject json = JObject.Parse(requestContent);
             string username = (string)json["Username"];
             string password = (string)json["Password"];
 
-            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+            switch (_db.RegisterUser(username, password))
             {
-                return new Response(400, "Bad Request","Fields must not be empty!");
+                case RegisterStatus.FieldEmpty: 
+                    return new Response(400,"Fields must not be empty!");
+                case RegisterStatus.AlreadyExist: 
+                    return new Response(409,"User already exists!");
+                default: 
+                    return new Response(201,"You are now registered!");
             }
-
-            if (!db.RegisterUser(username, password))
-            {
-                return new Response(409, "Conflict","User already exists!");
-            }
-
-            return new Response(201, "Created","You are now registered!");
         }
 
-        private static Response HandleLogin(Request request)
+        private Response HandleLogin(string requestContent)
         {
-            JObject json = JObject.Parse(request.Content);
+            JObject json = JObject.Parse(requestContent);
             string username = (string) json["Username"];
             string password = (string) json["Password"];
 
-            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+            switch (_db.LoginUser(username, password))
             {
-                return new Response(400, "Bad Request","Fields must not be empty!");
+                case LoginStatus.FieldEmpty: 
+                    return new Response(400,"Fields must not be empty!");
+                case LoginStatus.IncorrectData: 
+                    return new Response(400,"Username or Password incorrect!");
+                default: 
+                    return new Response(200,"You are logged in!");
             }
-
-            if (!db.LoginUser(username, password))
-            {
-                return new Response(400, "Bad Request","Username or Password incorrect!");
-            }
-
-            return new Response(200, "OK","You are logged in!");
         }
         
-        private static Response HandleShowStack(string username)
+        private Response HandleShowStack(string username)
         {
             if (string.IsNullOrEmpty(username))
             {
-                return new Response(401, "Unauthorized","You are not logged in! (Authentication token invalid)");
+                return new Response(401,"You are not logged in! (Authentication token invalid)");
             }
 
-            List<ICard> stack = db.GetUserStack(username);
+            List<ICard> stack = _db.GetUserStack(username);
             
             if (stack.Count <= 0)
             {
-                return new Response(404, "Not Found",$"{username} didn't buy packages yet!");
+                return new Response(404,$"You didn't buy packages yet!");
             }
             
             string json = JsonConvert.SerializeObject(stack, Formatting.Indented, new StringEnumConverter());
-            return new Response(200, "OK",json, "application/json");
+            return new Response(200,json, "application/json");
         }
         
-        private static Response HandleShowDeck(string username)
+        private Response HandleShowDeck(string username)
         {
             if (string.IsNullOrEmpty(username))
             {
-                return new Response(401, "Unauthorized","You are not logged in! (Authentication token invalid)");
+                return new Response(401,"You are not logged in! (Authentication token invalid)");
             }
 
-            List<ICard> deck = db.GetUserDeck(username);
+            List<ICard> deck = _db.GetUserDeck(username);
 
             if (deck.Count <= 0)
             {
-                return new Response(404, "Not Found", "Deck not configured yet!");
+                return new Response(404, "You didn't configure your deck yet!");
             }
             
             string json = JsonConvert.SerializeObject(deck, Formatting.Indented, new StringEnumConverter());
-            return new Response(200, "OK",json, "application/json");
+            return new Response(200,json, "application/json");
         }
         
-        private static Response HandleShowDeckInPlain(string username)
+        private Response HandleShowDeckInPlain(string username)
         {
             if (string.IsNullOrEmpty(username))
             {
-                return new Response(401, "Unauthorized","You are not logged in! (Authentication token invalid)");
+                return new Response(401,"You are not logged in! (Authentication token invalid)");
             }
 
-            List<ICard> deck = db.GetUserDeck(username);
+            List<ICard> deck = _db.GetUserDeck(username);
 
             if (deck.Count <= 0)
             {
-                return new Response(404, "Not Found","Deck not configured yet!");
+                return new Response(204,"Deck not configured yet!");
             }
 
             StringBuilder deckPlain = new StringBuilder();
@@ -295,160 +271,181 @@ namespace SWEN1.MTCG.Server
                 deckPlain.Append($"- {card.Id}: {card.Name} ({card.Damage} Damage) {Environment.NewLine}");
             }
             
-            return new Response(200, "OK",deckPlain.ToString());
+            return new Response(200,deckPlain.ToString());
         }
         
-        private static Response HandleConfigureDeck(Request request, string username)
+        private Response HandleConfigureDeck(string requestContent, string username)
         {
             if (string.IsNullOrEmpty(username))
             {
-                return new Response(401, "Unauthorized","You are not logged in! (Authentication token invalid)");
+                return new Response(401,"You are not logged in! (Authentication token invalid)");
             }
             
-            string[] cardArray = JsonConvert.DeserializeObject<string[]>(request.Content);
+            string[] cardArray = JsonConvert.DeserializeObject<string[]>(requestContent);
 
-            if (cardArray.Length != 4)
+            switch (_db.ConfigureDeck(cardArray, username))
             {
-                return new Response(400, "Bad Request","You have to set 4 cards for the deck!");
+                case ConfigDeckStatus.NotFourCards: 
+                    return new Response(400,"You have to set 4 cards for the deck!");
+                case ConfigDeckStatus.NoMatchCards: 
+                    return new Response(400,"Card IDs doesn't match with your chosen Cards");
+                default: 
+                    return new Response(200,"Deck configured!");
             }
-
-            if (!db.ConfigureDeck(cardArray, username))
-            {
-                return new Response(400, "Bad Request","Card IDs doesn't match with your chosen Cards");
-            }
-
-            return new Response(200, "OK","Deck configured!");
         }
 
-        private static Response HandleEditUserData(string subQuery, Request request, string username)
+        private Response HandleEditUserData(string subQuery, string requestContent, string username)
         {
             if (string.IsNullOrEmpty(username))
             {
-                return new Response(401, "Unauthorized","You are not logged in! (Authentication token invalid)");
-            }
-            if (subQuery != username)
-            {
-                return new Response(403, "Forbidden","You are not allowed to access the bio from another user!");
+                return new Response(401,"You are not logged in! (Authentication token invalid)");
             }
             
-            JObject json = JObject.Parse(request.Content);
+            if (subQuery != username)
+            {
+                return new Response(403,"You are not allowed to access the bio from another user!");
+            }
+            
+            JObject json = JObject.Parse(requestContent);
             string name = (string)json["Name"];
             string bio = (string)json["Bio"];
             string image = (string)json["Image"];
 
-            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(bio) || string.IsNullOrEmpty(image))
+            switch (_db.EditUserData(username, name, bio, image))
             {
-                return new Response(400, "Bad Request","Fields must not be empty!");
+                case EditUserDataStatus.FieldEmpty: 
+                    return new Response(400,"Fields must not be empty!");
+                default: 
+                    return new Response(200, "You have changed your bio!");
             }
-
-            db.EditUserData(username, name, bio, image);
-
-            return new Response(200, "Created", "You have changed your bio!");
         }
         
-        private static Response HandleGetUserData(string subQuery, string username)
+        private Response HandleGetUserData(string subQuery, string username)
         {
             if (string.IsNullOrEmpty(username))
             {
-                return new Response(401, "Unauthorized","You are not logged in! (Authentication token invalid)");
+                return new Response(401,"You are not logged in! (Authentication token invalid)");
             }
 
             if (subQuery != username)
             {
-                return new Response(403, "Forbidden", "You are not allowed to access the bio from another user!");
+                return new Response(403, "You are not allowed to access the bio from another user!");
             }
 
-            UserData user = db.GetUserData(username);
+            Usertable user = _db.GetUserData(username);
             string json = JsonConvert.SerializeObject(user, Formatting.Indented, new StringEnumConverter());
             
-            return new Response(200, "OK",json, "application/json");
+            return new Response(200,json, "application/json");
         }
         
-        private static Response HandleShowStats(string username)
+        private Response HandleShowStats(string username)
         {
             if (string.IsNullOrEmpty(username))
             {
-                return new Response(401, "Unauthorized","You are not logged in! (Authentication token invalid)");
+                return new Response(401,"You are not logged in! (Authentication token invalid)");
             }
 
-            Stats stats = db.GetUserStats(username);
+            Statstable stats = _db.GetUserStats(username);
             string json = JsonConvert.SerializeObject(stats, Formatting.Indented, new StringEnumConverter());
             
-            return new Response(200, "OK",json, "application/json");
+            return new Response(200,json, "application/json");
         }
         
-        private static Response HandleShowScoreboard(string username)
+        private Response HandleShowScoreboard(string username)
         {
             if (string.IsNullOrEmpty(username))
             {
-                return new Response(401, "Unauthorized","You are not logged in! (Authentication token invalid)");
+                return new Response(401,"You are not logged in! (Authentication token invalid)");
             }
 
-            List<Stats> scoreBoard = db.GetScoreBoard();
+            List<Statstable> scoreBoard = _db.GetScoreBoard();
             
             if (scoreBoard.Count <= 0)
             {
-                return new Response(404, "Not Found","No user registered yet!");
+                return new Response(404,"No user registered yet!");
             }
           
             string json = JsonConvert.SerializeObject(scoreBoard, Formatting.Indented, new StringEnumConverter());
-            return new Response(200, "OK",json, "application/json");
+            return new Response(200,json, "application/json");
         }
-        private static Response HandleCreateTradingDeal(string username, Request request)
+        private Response HandleCreateTradingDeal(string username, string requestContent)
         {
             if (string.IsNullOrEmpty(username))
             {
-                return new Response(401, "Unauthorized","You are not logged in! (Authentication token invalid)");
+                return new Response(401,"You are not logged in! (Authentication token invalid)");
             }
             
-            JObject json = JObject.Parse(request.Content);
+            JObject json = JObject.Parse(requestContent);
             string tradeId = (string)json["Id"];
             string cardId = (string)json["CardToTrade"];
             string type = (string)json["Type"];
-            string minimumDamage = (string)json["MinimumDamage"];
+            string minimumDamageString = (string)json["MinimumDamage"];
 
-            if (string.IsNullOrEmpty(tradeId) || string.IsNullOrEmpty(cardId) || string.IsNullOrEmpty(type) || string.IsNullOrEmpty(minimumDamage))
+            switch (_db.CreateTradingDeal(username, tradeId, cardId, type, minimumDamageString))
             {
-                return new Response(400, "Bad Request","Fields must not be empty!");
+                case CreateTradingDealStatus.FieldEmpty: 
+                    return new Response(400,"Fields must not be empty!");
+                case CreateTradingDealStatus.CardInDeck: 
+                    return new Response(400,"Card must not be in your deck!");
+                default: 
+                    return new Response(200,"You have created a trading deal!");
             }
-
-            if (!db.CreateTradingDeal(username, tradeId, cardId, type, Convert.ToDouble(minimumDamage)))
-            {
-                return new Response(400, "Bad Request","Card must not be in your deck!");
-            }
-
-            return new Response(200, "OK","You have created a trading deal!");
         }
-        private static Response HandleShowTradingDeals(string username)
+        private Response HandleShowTradingDeals(string username)
         {
             if (string.IsNullOrEmpty(username))
             {
-                return new Response(401, "Unauthorized","You are not logged in! (Authentication token invalid)");
+                return new Response(401,"You are not logged in! (Authentication token invalid)");
             }
 
-            List<Trade> tradingDeals = db.GetTradingDeals();
+            List<Tradetable> tradingDeals = _db.GetTradingDeals();
             
             if (tradingDeals.Count <= 0)
             {
-                return new Response(404, "Not Found","No trading deals yet!");
+                return new Response(404,"No trading deals yet!");
             }
             
             string json = JsonConvert.SerializeObject(tradingDeals, Formatting.Indented, new StringEnumConverter());
-            return new Response(200, "OK",json, "application/json");
+            return new Response(200,json, "application/json");
         }
-        private static Response HandleDeleteTradingDeal(string subQuery, string username)
+        private Response HandleDeleteTradingDeal(string subQuery, string username)
         {
             if (string.IsNullOrEmpty(username))
             {
-                return new Response(401, "Unauthorized","You are not logged in! (Authentication token invalid)");
+                return new Response(401,"You are not logged in! (Authentication token invalid)");
             }
-
-            if (!db.DeleteTradingDeal(subQuery, username))
+            
+            switch (_db.DeleteTradingDeal(subQuery, username))
             {
-                return new Response(400, "Bad Request","User can't delete trades from other players!");
+                case DeleteTradingDealStatus.FromOtherUser: 
+                    return new Response(400,"User can't delete trades from other players!");
+                default:
+                    return new Response(200,"You have created a trading deal!");
+            }
+        }
+
+        private Response HandleProcessTradingDeal(string subQuery, string requestContent, string username)
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                return new Response(401,"You are not logged in! (Authentication token invalid)");
             }
 
-            return new Response(200, "OK","You have created a trading deal!");
+            requestContent = requestContent.Replace("\"", "");
+            
+            switch (_db.ProcessTradingDeal(subQuery, requestContent, username))
+            {
+                case ProcessTradingDealStatus.NotExist: 
+                    return new Response(404, "Card ID doesn't exist!");
+                case ProcessTradingDealStatus.SameUser: 
+                    return new Response(406, "You cannot trade with yourself!");
+                case ProcessTradingDealStatus.RequestNotExist: 
+                    return new Response(404, "Offered card doesn't exist!");
+                case ProcessTradingDealStatus.NotWanted: 
+                    return new Response(406, "Offered Card doesn't match with the searched Cardterms!");
+                default: 
+                    return new Response(200, "You traded successfully!");
+            }
         }
     }
 }

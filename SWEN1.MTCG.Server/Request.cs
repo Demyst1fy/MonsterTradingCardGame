@@ -1,34 +1,25 @@
-﻿namespace SWEN1.MTCG.Server
-{
-    public class Request
-    {
-        public string Method { get; private set; }
-        public string Query { get; private set; }
-        public string Version { get; private set; }
-        public string ContentType { get; private set; }
-        public string ContentLength { get; private set; }
-        public string Content { get; private set; }
-        public string AuthToken { get; private set; }
+﻿using SWEN1.MTCG.Server.Interfaces;
 
-        public Request(string method, string query, string version, 
-                        string contentType, string contentLength, string content)
+namespace SWEN1.MTCG.Server
+{
+    public class Request : IRequest
+    {
+        public string Method { get; }
+        public string Query { get; }
+        public string Content { get; }
+        public string AuthToken { get; }
+
+        public Request(string method, string query, string content)
         {
             Method = method;
             Query = query;
-            Version = version;
-            ContentType = contentType;
-            ContentLength = contentLength;
             Content = content;
         }
         
-        public Request(string method, string query, string version, 
-            string contentType, string contentLength, string content, string authToken)
+        public Request(string method, string query, string content, string authToken)
         {
             Method = method;
             Query = query;
-            Version = version;
-            ContentType = contentType;
-            ContentLength = contentLength;
             Content = content;
             AuthToken = authToken;
         }

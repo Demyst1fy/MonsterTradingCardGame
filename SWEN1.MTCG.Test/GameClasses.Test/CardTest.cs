@@ -1,8 +1,7 @@
-using System.Collections.Generic;
-using SWEN1.MTCG.ClassLibrary;
 using NUnit.Framework;
+using SWEN1.MTCG.GameClasses;
 
-namespace SWEN1.MTCG.Test
+namespace SWEN1.MTCG.Test.GameClasses.Test
 {
     public class CardTest
     {

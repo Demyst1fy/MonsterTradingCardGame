@@ -1,6 +1,6 @@
-﻿namespace SWEN1.MTCG.ClassLibrary
+﻿namespace SWEN1.MTCG.Server.DatabaseClasses
 {
-    public class Stats
+    public class Statstable
     {
         public string User { get; }
         public int Wins { get; }
@@ -10,7 +10,7 @@
         
         public double WinRate { get; }
 
-        public Stats(string user, int wins, int losses, int draws, int elo, double winRate)
+        public Statstable(string user, int wins, int losses, int draws, int elo, double winRate)
         {
             User = user;
             Wins = wins;

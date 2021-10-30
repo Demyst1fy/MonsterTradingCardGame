@@ -1,4 +1,5 @@
 ﻿using System;
+using SWEN1.MTCG.Server.Interfaces;
 
 namespace SWEN1.MTCG.Server
 {
@@ -6,8 +7,9 @@ namespace SWEN1.MTCG.Server
     {
         static void Main(string[] args)
         {
-            var x = new HTTPServer();
-            x.Start();
+            IHttpServer x = new HttpServer();
+            x.Start(10001);
+            Console.WriteLine("Welcome to the MTCG-Server. Waiting for requests...");
             Console.ReadLine();
             x.Stop();
         }

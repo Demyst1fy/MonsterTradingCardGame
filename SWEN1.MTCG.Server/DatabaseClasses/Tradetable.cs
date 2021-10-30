@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace SWEN1.MTCG.ClassLibrary
+﻿namespace SWEN1.MTCG.Server.DatabaseClasses
 {
-    public class Trade
+    public class Tradetable
     {
         public string Username { get; }
         public string Id { get; }
@@ -10,7 +8,7 @@ namespace SWEN1.MTCG.ClassLibrary
         public string Type { get; }
         public double MinimumDamage { get; }
 
-        public Trade(string username, string id, string cardToTrade, string type, double minimumDamage)
+        public Tradetable(string username, string id, string cardToTrade, string type, double minimumDamage)
         {
             Username = username;
             Id = id;

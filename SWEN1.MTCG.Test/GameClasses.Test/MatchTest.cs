@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using Moq;
 using NUnit.Framework;
-using SWEN1.MTCG.ClassLibrary;
-using Match = SWEN1.MTCG.ClassLibrary.Match;
+using SWEN1.MTCG.GameClasses;
+using SWEN1.MTCG.GameClasses.Interfaces;
+using Match = SWEN1.MTCG.GameClasses.Match;
 
-namespace SWEN1.MTCG.Test
+namespace SWEN1.MTCG.Test.GameClasses.Test
 {
     public class MatchTest
     {

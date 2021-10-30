@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Net.Http.Headers;
 
-namespace SWEN1.MTCG.ClassLibrary
+namespace SWEN1.MTCG.GameClasses
 {
     public class Shop
     {
