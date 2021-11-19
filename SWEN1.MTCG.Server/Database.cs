@@ -372,9 +372,9 @@ namespace SWEN1.MTCG.Server
             return scoreBoard;
         }
 
-        public CreateTradingDealStatus CreateTradingDeal(string username, string tradeId, string cardId, string searchType, string minimumDamageString)
+        public CreateTradingDealStatus CreateTradingDeal(string username, string tradeId, string cardId, string searchType, double? minimumDamage)
         {
-            if (string.IsNullOrEmpty(tradeId) || string.IsNullOrEmpty(cardId) || string.IsNullOrEmpty(searchType) || string.IsNullOrEmpty(minimumDamageString))
+            if (string.IsNullOrEmpty(tradeId) || string.IsNullOrEmpty(cardId) || string.IsNullOrEmpty(searchType) || minimumDamage == null)
             {
                 return CreateTradingDealStatus.FieldEmpty;
             }
@@ -409,7 +409,7 @@ namespace SWEN1.MTCG.Server
             cmd2.Parameters.AddWithValue(":tr_id", tradeId);
             cmd2.Parameters.AddWithValue(":c_id", cardId);
             cmd2.Parameters.AddWithValue(":tr_searchtype", searchType);
-            cmd2.Parameters.AddWithValue(":tr_minimumdamage", Convert.ToDouble(minimumDamageString));
+            cmd2.Parameters.AddWithValue(":tr_minimumdamage", minimumDamage);
             cmd2.Prepare();
             cmd2.ExecuteNonQuery();
             Con.Close();

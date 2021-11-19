@@ -1,5 +1,5 @@
 ﻿using System;
-using SWEN1.MTCG.ClassLibrary;
+using SWEN1.MTCG.GameClasses;
 
 namespace SWEN1.MTCG
 {

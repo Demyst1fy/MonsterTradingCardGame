@@ -16,7 +16,7 @@ namespace SWEN1.MTCG.Server.Interfaces
         Statstable GetUserStats(string username);
         List<Statstable> GetScoreBoard();
         List<Tradetable> GetTradingDeals();
-        CreateTradingDealStatus CreateTradingDeal(string username, string tradeId, string cardId, string searchType, string minimumDamageString);
+        CreateTradingDealStatus CreateTradingDeal(string username, string tradeId, string cardId, string searchType, double? minimumDamage);
         DeleteTradingDealStatus DeleteTradingDeal(string tradeId, string username);
         ProcessTradingDealStatus ProcessTradingDeal(string tradeId, string offeredCardId, string username);
         string GetUsernameFromAuthKey(string authToken);

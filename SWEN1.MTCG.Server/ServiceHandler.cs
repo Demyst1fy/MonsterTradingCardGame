@@ -7,14 +7,15 @@ using Newtonsoft.Json.Linq;
 using SWEN1.MTCG.GameClasses.Interfaces;
 using SWEN1.MTCG.Server.DatabaseClasses;
 using SWEN1.MTCG.Server.Interfaces;
+using SWEN1.MTCG.Server.JSONClasses;
 
 namespace SWEN1.MTCG.Server
 {
     public class ServiceHandler : IServiceHandler
     {
-        private readonly object _lockObj = new object();
-        private readonly IDatabase _db = new Database();
-
+        private readonly object _lockObj = new();
+        private IDatabase _db;
+        
         private IRequest ParseRequest(string data)
         {
             if (string.IsNullOrEmpty(data))
@@ -62,6 +63,14 @@ namespace SWEN1.MTCG.Server
         
         public Response HandleRequest(string request)
         {
+            if (_db == null)
+            {
+                lock (_lockObj)
+                {
+                    _db = new Database();
+                }
+            }
+            
             Console.WriteLine($"Request:{request} {Environment.NewLine}");
             IRequest parsedRequest = ParseRequest(request);
 
@@ -182,9 +191,9 @@ namespace SWEN1.MTCG.Server
 
         private Response HandleRegistration(string requestContent)
         {
-            JObject json = JObject.Parse(requestContent);
-            string username = (string)json["Username"];
-            string password = (string)json["Password"];
+            UserJSON json = JsonConvert.DeserializeObject<UserJSON>(requestContent);
+            string username = json.Username;
+            string password = json.Password;
 
             switch (_db.RegisterUser(username, password))
             {
@@ -199,9 +208,9 @@ namespace SWEN1.MTCG.Server
 
         private Response HandleLogin(string requestContent)
         {
-            JObject json = JObject.Parse(requestContent);
-            string username = (string) json["Username"];
-            string password = (string) json["Password"];
+            UserJSON json = JsonConvert.DeserializeObject<UserJSON>(requestContent);
+            string username = json.Username;
+            string password = json.Password;
 
             switch (_db.LoginUser(username, password))
             {
@@ -306,10 +315,10 @@ namespace SWEN1.MTCG.Server
                 return new Response(403,"You are not allowed to access the bio from another user!");
             }
             
-            JObject json = JObject.Parse(requestContent);
-            string name = (string)json["Name"];
-            string bio = (string)json["Bio"];
-            string image = (string)json["Image"];
+            UserinfoJSON json = JsonConvert.DeserializeObject<UserinfoJSON>(requestContent);
+            string name = json.Name;
+            string bio = json.Bio;
+            string image = json.Image;
 
             switch (_db.EditUserData(username, name, bio, image))
             {
@@ -375,13 +384,14 @@ namespace SWEN1.MTCG.Server
                 return new Response(401,"You are not logged in! (Authentication token invalid)");
             }
             
-            JObject json = JObject.Parse(requestContent);
-            string tradeId = (string)json["Id"];
-            string cardId = (string)json["CardToTrade"];
-            string type = (string)json["Type"];
-            string minimumDamageString = (string)json["MinimumDamage"];
+            TradeJSON json = JsonConvert.DeserializeObject<TradeJSON>(requestContent);
 
-            switch (_db.CreateTradingDeal(username, tradeId, cardId, type, minimumDamageString))
+            string tradeId = json.Id;
+            string cardId = json.CardToTrade;
+            string type = json.Type;
+            double minimumDamage = json.MinimumDamage;
+
+            switch (_db.CreateTradingDeal(username, tradeId, cardId, type, minimumDamage))
             {
                 case CreateTradingDealStatus.FieldEmpty: 
                     return new Response(400,"Fields must not be empty!");
