@@ -53,14 +53,14 @@ namespace SWEN1.MTCG.Server
             return request;
         }
 
-        private async void ServerHandler(object o)
+        private void ServerHandler(object o)
         {
             _listener.Start();
 
             while(true)
             {
-                using TcpClient client = await _listener.AcceptTcpClientAsync();
-                await using NetworkStream stream = client.GetStream();
+                using TcpClient client = _listener.AcceptTcpClient(); 
+                using NetworkStream stream = client.GetStream();
                 string request = ReadRequest(stream);
 
                 IServiceHandler serviceHandler = new ServiceHandler();
