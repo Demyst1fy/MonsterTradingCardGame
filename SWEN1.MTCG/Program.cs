@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using SWEN1.MTCG.GameClasses;
 
 namespace SWEN1.MTCG
@@ -7,6 +8,24 @@ namespace SWEN1.MTCG
     {
         static void Main(string[] args)
         {
+            List<string> list = new List<string>()
+            {
+                Shop.GenerateId(),
+                Shop.GenerateId(),
+                Shop.GenerateId(),
+                Shop.GenerateId(),
+                Shop.GenerateId(),
+                Shop.GenerateId(),
+                Shop.GenerateId(),
+                Shop.GenerateId(),
+                Shop.GenerateId(),
+            };
+
+            foreach (var card in list)
+            {
+                Console.WriteLine(card);
+            }
+
             /*Database database = new Database();
            
             Console.WriteLine("Welcome to your Monster Trading Card Game!");

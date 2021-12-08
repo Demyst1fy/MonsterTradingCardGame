@@ -1,6 +1,6 @@
 ﻿namespace SWEN1.MTCG.Server.DatabaseClasses
 {
-    public class Usertable
+    public class UserTable
     {
         public string Username { get; }
         public int Coins { get; }
@@ -8,7 +8,7 @@
         public string Bio { get; }
         public string Image { get; }
         
-        public Usertable(string username, int coins, string fullname, string bio, string image)
+        public UserTable(string username, int coins, string fullname, string bio, string image)
         {
             Username = username;
             Coins = coins;

@@ -135,11 +135,11 @@ namespace SWEN1.MTCG.Server
                         }
                         else if (parsedRequest.Query == "/packages")
                         {
-                            // create package
+                            return HandleCreatePackage(parsedRequest.Content, usernameFromAuthKey);
                         }
-                        else if (parsedRequest.Query == "/transactions/package")
+                        else if (parsedRequest.Query == "/transactions/packages")
                         {
-                            // acquire package
+                            return HandleAcquirePackage(parsedRequest.Content, usernameFromAuthKey);
                         }
                         else if (parsedRequest.Query == "/battles")
                         {
@@ -222,7 +222,62 @@ namespace SWEN1.MTCG.Server
                     return new Response(200,"You are logged in!");
             }
         }
+
+        private Response HandleCreatePackage(string requestContent, string username)
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                return new Response(401,"You are not logged in! (Authentication token invalid)");
+            }
+            if (username != "admin")
+            {
+                return new Response(403,"Only Administrator are permitted to create package!");
+            }
+            
+            PackageJSON packageJson = JsonConvert.DeserializeObject<PackageJSON>(requestContent);
+
+            if (_db.CheckPackageExist(packageJson.PackId))
+            {
+                return new Response(400,"Package already exists!");
+            }
+
+            foreach (var card in packageJson.Cards)
+            {
+                PackageCardJSON cardJson = JsonConvert.DeserializeObject<PackageCardJSON>(card.ToString());
+                switch (_db.CreatePackage(packageJson.PackId, cardJson.Id, cardJson.Name, cardJson.Damage))
+                {
+                    case CreatePackageStatus.FieldEmpty: 
+                        return new Response(400,"Fields must not be empty!");
+                    case CreatePackageStatus.AlreadyExist: 
+                        return new Response(409,"Card already exists!");
+                }
+            }
+
+            return new Response(201,"Package has been created!");
+        }
         
+        private Response HandleAcquirePackage(string requestContent, string username)
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                return new Response(401,"You are not logged in! (Authentication token invalid)");
+            } 
+            if (string.IsNullOrEmpty(requestContent))
+            {
+                return new Response(400,"Fields must not be empty!");
+            }
+            
+            switch (_db.AcquirePackage(requestContent, username))
+            {
+                case AcquirePackageStatus.NotExist: 
+                    return new Response(400,"Package doesn't exist!");
+                case AcquirePackageStatus.NoCoins: 
+                    return new Response(409,"Not enough Coins!");
+                default:
+                    return new Response(201,"Package has been bought!");
+            }
+        }
+
         private Response HandleShowStack(string username)
         {
             if (string.IsNullOrEmpty(username))
@@ -341,7 +396,7 @@ namespace SWEN1.MTCG.Server
                 return new Response(403, "You are not allowed to access the bio from another user!");
             }
 
-            Usertable user = _db.GetUserData(username);
+            UserTable user = _db.GetUserData(username);
             string json = JsonConvert.SerializeObject(user, Formatting.Indented, new StringEnumConverter());
             
             return new Response(200,json, "application/json");
@@ -354,7 +409,7 @@ namespace SWEN1.MTCG.Server
                 return new Response(401,"You are not logged in! (Authentication token invalid)");
             }
 
-            Statstable stats = _db.GetUserStats(username);
+            StatsTable stats = _db.GetUserStats(username);
             string json = JsonConvert.SerializeObject(stats, Formatting.Indented, new StringEnumConverter());
             
             return new Response(200,json, "application/json");
@@ -367,7 +422,7 @@ namespace SWEN1.MTCG.Server
                 return new Response(401,"You are not logged in! (Authentication token invalid)");
             }
 
-            List<Statstable> scoreBoard = _db.GetScoreBoard();
+            List<StatsTable> scoreBoard = _db.GetScoreBoard();
             
             if (scoreBoard.Count <= 0)
             {
@@ -408,7 +463,7 @@ namespace SWEN1.MTCG.Server
                 return new Response(401,"You are not logged in! (Authentication token invalid)");
             }
 
-            List<Tradetable> tradingDeals = _db.GetTradingDeals();
+            List<TradeTable> tradingDeals = _db.GetTradingDeals();
             
             if (tradingDeals.Count <= 0)
             {
@@ -430,7 +485,7 @@ namespace SWEN1.MTCG.Server
                 case DeleteTradingDealStatus.FromOtherUser: 
                     return new Response(400,"User can't delete trades from other players!");
                 default:
-                    return new Response(200,"You have created a trading deal!");
+                    return new Response(200,"You have delete a trading deal!");
             }
         }
 

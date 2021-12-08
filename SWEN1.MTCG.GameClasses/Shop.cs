@@ -4,12 +4,12 @@ namespace SWEN1.MTCG.GameClasses
 {
     public class Shop
     {
-        private static string GenerateId()
+        public static string GenerateId()
         {
             const int idLength = 36;
             
             var random = new Random();
-            const string chars = "abcdefghijklmnpqrstuvwxyz0123456789";
+            const string chars = "abcdef0123456789";
             var buffer = new char[idLength];
             
             for(var i = 0; i < idLength; ++i)

@@ -56,24 +56,24 @@ echo.
 
 REM --------------------------------------------------
 echo 4) acquire packages kienboec
-curl -X POST http://localhost:10001/transactions/packages --header "Content-Type: application/json" --header "Authorization: Basic kienboec-mtcgToken" -d "\"205f2666-f7ca-eb69-4b15-2052f8757ab1\""
+curl -X POST http://localhost:10001/transactions/packages --header "Content-Type: application/json" --header "Authorization: Basic kienboec-mtcgToken" -d "205f2666-f7ca-eb69-4b15-2052f8757ab1"
 echo.
-curl -X POST http://localhost:10001/transactions/packages --header "Content-Type: application/json" --header "Authorization: Basic kienboec-mtcgToken" -d "\"cdad2efb-3db0-9a6d-94c2-583e135b683e\""
+curl -X POST http://localhost:10001/transactions/packages --header "Content-Type: application/json" --header "Authorization: Basic kienboec-mtcgToken" -d "cdad2efb-3db0-9a6d-94c2-583e135b683e"
 echo.
-curl -X POST http://localhost:10001/transactions/packages --header "Content-Type: application/json" --header "Authorization: Basic kienboec-mtcgToken" -d "\"0edb6a92-d904-ef3c-148c-8cd5b7b8ecf7\""
+curl -X POST http://localhost:10001/transactions/packages --header "Content-Type: application/json" --header "Authorization: Basic kienboec-mtcgToken" -d "0edb6a92-d904-ef3c-148c-8cd5b7b8ecf7"
 echo.
-curl -X POST http://localhost:10001/transactions/packages --header "Content-Type: application/json" --header "Authorization: Basic kienboec-mtcgToken" -d "\"e7386e84-cef8-b270-c70c-a011b3b9114f\""
+curl -X POST http://localhost:10001/transactions/packages --header "Content-Type: application/json" --header "Authorization: Basic kienboec-mtcgToken" -d "e7386e84-cef8-b270-c70c-a011b3b9114f"
 echo.
 echo should fail (no money):
-curl -X POST http://localhost:10001/transactions/packages --header "Content-Type: application/json" --header "Authorization: Basic kienboec-mtcgToken" -d "\"19c14e92-183b-0643-6e8c-ee5580e3958f\""
+curl -X POST http://localhost:10001/transactions/packages --header "Content-Type: application/json" --header "Authorization: Basic kienboec-mtcgToken" -d "19c14e92-183b-0643-6e8c-ee5580e3958f"
 echo.
 echo.
 
 REM --------------------------------------------------
 echo 5) acquire packages altenhof
-curl -X POST http://localhost:10001/transactions/packages --header "Content-Type: application/json" --header "Authorization: Basic altenhof-mtcgToken" -d "\"19c14e92-183b-0643-6e8c-ee5580e3958f\""
+curl -X POST http://localhost:10001/transactions/packages --header "Content-Type: application/json" --header "Authorization: Basic altenhof-mtcgToken" -d "19c14e92-183b-0643-6e8c-ee5580e3958f"
 echo.
-curl -X POST http://localhost:10001/transactions/packages --header "Content-Type: application/json" --header "Authorization: Basic altenhof-mtcgToken" -d "\"80c5309f-16ed-4bff-a8c0-31a0fcfef0cd\""
+curl -X POST http://localhost:10001/transactions/packages --header "Content-Type: application/json" --header "Authorization: Basic altenhof-mtcgToken" -d "80c5309f-16ed-4bff-a8c0-31a0fcfef0cd"
 echo.
 echo should fail (no package):
 curl -X POST http://localhost:10001/transactions/packages --header "Content-Type: application/json" --header "Authorization: Basic altenhof-mtcgToken" -d ""
@@ -92,12 +92,12 @@ echo.
 
 REM --------------------------------------------------
 echo 7) acquire newly created packages altenhof
-curl -X POST http://localhost:10001/transactions/packages --header "Content-Type: application/json" --header "Authorization: Basic altenhof-mtcgToken" -d "\"afc3b2d2-1228-9790-9977-fc958234a70d\""
+curl -X POST http://localhost:10001/transactions/packages --header "Content-Type: application/json" --header "Authorization: Basic altenhof-mtcgToken" -d "afc3b2d2-1228-9790-9977-fc958234a70d"
 echo.
-curl -X POST http://localhost:10001/transactions/packages --header "Content-Type: application/json" --header "Authorization: Basic altenhof-mtcgToken" -d "\"94789bde-849d-aeab-80f6-2a0ebbc6b2c6\""
+curl -X POST http://localhost:10001/transactions/packages --header "Content-Type: application/json" --header "Authorization: Basic altenhof-mtcgToken" -d "94789bde-849d-aeab-80f6-2a0ebbc6b2c6"
 echo.
 echo should fail (no money):
-curl -X POST http://localhost:10001/transactions/packages --header "Content-Type: application/json" --header "Authorization: Basic altenhof-mtcgToken" -d "\"efd64b3c-1bc9-3da5-79cf-fd09ce0f00ef\""
+curl -X POST http://localhost:10001/transactions/packages --header "Content-Type: application/json" --header "Authorization: Basic altenhof-mtcgToken" -d "efd64b3c-1bc9-3da5-79cf-fd09ce0f00ef"
 echo.
 echo.
 
@@ -208,12 +208,6 @@ echo.
 echo.
 
 REM --------------------------------------------------
-echo 17) battle
-start /b "kienboec battle" curl -X POST http://localhost:10001/battles --header "Authorization: Basic kienboec-mtcgToken"
-start /b "altenhof battle" curl -X POST http://localhost:10001/battles --header "Authorization: Basic altenhof-mtcgToken"
-ping localhost -n 10 >NUL 2>NUL
-
-REM --------------------------------------------------
 echo 18) Stats 
 echo kienboec
 curl -X GET http://localhost:10001/stats --header "Authorization: Basic kienboec-mtcgToken"
@@ -235,7 +229,7 @@ echo check trading deals
 curl -X GET http://localhost:10001/tradings --header "Authorization: Basic kienboec-mtcgToken"
 echo.
 echo create trading deal
-curl -X POST http://localhost:10001/tradings --header "Content-Type: application/json" --header "Authorization: Basic kienboec-mtcgToken" -d "{\"Id\": \"6cd85277-4590-49d4-b0cf-ba0a921faad0\", \"CardToTrade\": \"1cb6ab86-bdb2-47e5-b6e4-68c5ab389334\", \"Type\": \"monster\", \"MinimumDamage\": 15}"
+curl -X POST http://localhost:10001/tradings --header "Content-Type: application/json" --header "Authorization: Basic kienboec-mtcgToken" -d "{\"Id\": \"6cd85277-4590-49d4-b0cf-ba0a921faad0\", \"CardToTrade\": \"1cb6ab86-bdb2-47e5-b6e4-68c5ab389334\", \"Type\": \"Monster\", \"MinimumDamage\": 15}"
 echo.
 echo check trading deals
 curl -X GET http://localhost:10001/tradings --header "Authorization: Basic kienboec-mtcgToken"
@@ -251,18 +245,18 @@ REM --------------------------------------------------
 echo 21) check trading deals
 curl -X GET http://localhost:10001/tradings  --header "Authorization: Basic kienboec-mtcgToken"
 echo.
-curl -X POST http://localhost:10001/tradings --header "Content-Type: application/json" --header "Authorization: Basic kienboec-mtcgToken" -d "{\"Id\": \"6cd85277-4590-49d4-b0cf-ba0a921faad0\", \"CardToTrade\": \"1cb6ab86-bdb2-47e5-b6e4-68c5ab389334\", \"Type\": \"monster\", \"MinimumDamage\": 15}"
+curl -X POST http://localhost:10001/tradings --header "Content-Type: application/json" --header "Authorization: Basic kienboec-mtcgToken" -d "{\"Id\": \"6cd85277-4590-49d4-b0cf-ba0a921faad0\", \"CardToTrade\": \"1cb6ab86-bdb2-47e5-b6e4-68c5ab389334\", \"Type\": \"Monster\", \"MinimumDamage\": 15}"
 echo check trading deals
 curl -X GET http://localhost:10001/tradings  --header "Authorization: Basic kienboec-mtcgToken"
 echo.
 curl -X GET http://localhost:10001/tradings  --header "Authorization: Basic altenhof-mtcgToken"
 echo.
 echo try to trade with yourself (should fail)
-curl -X POST http://localhost:10001/tradings/6cd85277-4590-49d4-b0cf-ba0a921faad0 --header "Content-Type: application/json" --header "Authorization: Basic kienboec-mtcgToken" -d "\"4ec8b269-0dfa-4f97-809a-2c63fe2a0025\""
+curl -X POST http://localhost:10001/tradings/6cd85277-4590-49d4-b0cf-ba0a921faad0 --header "Content-Type: application/json" --header "Authorization: Basic kienboec-mtcgToken" -d "4ec8b269-0dfa-4f97-809a-2c63fe2a0025"
 echo.
 echo try to trade 
 echo.
-curl -X POST http://localhost:10001/tradings/6cd85277-4590-49d4-b0cf-ba0a921faad0 --header "Content-Type: application/json" --header "Authorization: Basic altenhof-mtcgToken" -d "\"951e886a-0fbf-425d-8df5-af2ee4830d85\""
+curl -X POST http://localhost:10001/tradings/6cd85277-4590-49d4-b0cf-ba0a921faad0 --header "Content-Type: application/json" --header "Authorization: Basic altenhof-mtcgToken" -d "951e886a-0fbf-425d-8df5-af2ee4830d85"
 echo.
 curl -X GET http://localhost:10001/tradings --header "Authorization: Basic kienboec-mtcgToken"
 echo.
