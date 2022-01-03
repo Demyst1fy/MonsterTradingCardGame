@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 
-namespace SWEN1.MTCG.GameClasses.Interfaces
+namespace SWEN1.MTCG.Game.Interfaces
 {
     public interface IUser
     {
-        int ID { get; }
         string Username { get; }
-        List<ICard> Deck { get; set; }
+        List<ICard> Deck { get; }
+        
+        Stats Stats { get; }
     }
 }

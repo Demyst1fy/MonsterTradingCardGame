@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SWEN1.MTCG.GameClasses
+namespace SWEN1.MTCG.Game
 {
     public class Shop
     {
@@ -15,13 +15,9 @@ namespace SWEN1.MTCG.GameClasses
             for(var i = 0; i < idLength; ++i)
             {
                 if (i is 8 or 13 or 18 or 23)
-                {
                     buffer[i] = '-';
-                }
                 else
-                {
                     buffer[i] = chars[random.Next(chars.Length)];
-                }
             }
 
             return new string(buffer);
@@ -38,8 +34,9 @@ namespace SWEN1.MTCG.GameClasses
 
             string chosenCardType = cardTypes[rdCardType];
             string chosenElement = elements[rdElement];
-            
-            if(chosenCardType != "Spell" && chosenElement == "Regular") { chosenElement = ""; }
+
+            if (chosenCardType != "Spell" && chosenElement == "Regular")
+                chosenElement = "";
 
             return chosenElement + chosenCardType;
         }

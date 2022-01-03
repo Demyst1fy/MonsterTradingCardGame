@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Npgsql;
-using SWEN1.MTCG.GameClasses;
-using SWEN1.MTCG.GameClasses.Interfaces;
+
+using SWEN1.MTCG.Game;
+using SWEN1.MTCG.Game.Interfaces;
 using SWEN1.MTCG.Server.DatabaseClasses;
 using SWEN1.MTCG.Server.Interfaces;
 
@@ -16,33 +19,34 @@ namespace SWEN1.MTCG.Server
         private readonly string dbpassword = "postgres";
         private readonly string dbname = "mtcg";
 
-        private static NpgsqlConnection _con;
+        private NpgsqlConnection _con;
+        
         public Database()
         {
-            _con = new NpgsqlConnection($"Host={host};" +
-                                       $"Port={Convert.ToString(port)};" +
-                                       $"Username={dbusername};" +
-                                       $"Password={dbpassword};" +
-                                       $"Database={dbname}");
+            _con = new NpgsqlConnection($"Host={host};" + 
+                                        $"Port={Convert.ToString(port)};" + 
+                                        $"Username={dbusername};" + 
+                                        $"Password={dbpassword};" + 
+                                        $"Database={dbname}");
         }
+        
+        
 
         public RegisterStatus RegisterUser(string username, string password)
         {
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
-            {
                 return RegisterStatus.FieldEmpty;
-            }
-            if (CheckUserExist(username))
-            {
-                return RegisterStatus.AlreadyExist;
-            }
             
+            if (CheckUserExist(username))
+                return RegisterStatus.AlreadyExist;
+
             string fullname = char.ToUpper(username[0]) + username.Substring(1);
             
             const string sql = "INSERT INTO \"UserTable\"(u_username, u_password, u_fullname)" +
                                "VALUES (:u_username, :u_password, :u_fullname)";
             
             _con.Open();
+
             var cmd = new NpgsqlCommand(sql, _con);
             
             cmd.Parameters.AddWithValue(":u_username", username);
@@ -50,31 +54,27 @@ namespace SWEN1.MTCG.Server
             cmd.Parameters.AddWithValue(":u_fullname", fullname);
             cmd.Prepare();
             cmd.ExecuteNonQuery();
-            _con.Close();
+
             
             const string sql2 = "INSERT INTO \"StatsTable\"(u_username)" +
-                               "VALUES (:u_username)";
+                                    "VALUES (:u_username)";
             
             _con.Open();
             var cmd2 = new NpgsqlCommand(sql2, _con);
-            
             cmd2.Parameters.AddWithValue(":u_username", username);
             cmd2.Prepare();
             cmd2.ExecuteNonQuery();
-            _con.Close();
-            
+
             return RegisterStatus.Success;
         }
         
         public LoginStatus LoginUser(string username, string password)
         {
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
-            {
                 return LoginStatus.FieldEmpty;
-            }
-            
+
             const string sql = "SELECT u_id FROM \"UserTable\" WHERE u_username = :u_username AND u_password = :u_password";
-            
+
             _con.Open();
             var cmd = new NpgsqlCommand(sql, _con);
             cmd.Parameters.AddWithValue(":u_username", username);
@@ -95,16 +95,12 @@ namespace SWEN1.MTCG.Server
             rdr.Close();
             _con.Close();
 
-            string sql2;
-            if (!CheckTokenIdExist(userId))
-            {
-                sql2 = "INSERT INTO \"TokenTable\" (u_id, t_token) VALUES(:u_id, :t_token)";
-            }
-            else
-            {
-                sql2 = "UPDATE \"TokenTable\" SET t_token = :t_token WHERE u_id = :u_id";
-            }
-            
+            var sql2 = !CheckTokenIdExist(userId) 
+                ? 
+                "INSERT INTO \"TokenTable\" (u_id, t_token) VALUES(:u_id, :t_token)" 
+                : 
+                "UPDATE \"TokenTable\" SET t_token = :t_token WHERE u_id = :u_id";
+
             _con.Open();
             var cmd2 = new NpgsqlCommand(sql2, _con);
             cmd2.Parameters.AddWithValue(":u_id", userId);
@@ -137,6 +133,7 @@ namespace SWEN1.MTCG.Server
 
                 user = new UserTable(username, coins, fullname, bio, image);
             }
+            
             rdr.Close();
             _con.Close();
             return user;
@@ -145,10 +142,8 @@ namespace SWEN1.MTCG.Server
         public EditUserDataStatus EditUserData(string username, string fullname, string bio, string image)
         {
             if (string.IsNullOrEmpty(fullname) || string.IsNullOrEmpty(bio) || string.IsNullOrEmpty(image))
-            {
                 return EditUserDataStatus.FieldEmpty;
-            }
-            
+
             const string sql = "UPDATE \"UserTable\" SET u_fullname = :u_fullname, u_bio = :u_bio, u_image = :u_image WHERE u_username = :u_username";
             
             _con.Open();
@@ -167,14 +162,11 @@ namespace SWEN1.MTCG.Server
         public CreatePackageStatus CreatePackage(string packId, string cardId, string cardName, double cardDamage)
         {
             if (string.IsNullOrEmpty(cardId) || string.IsNullOrEmpty(cardName))
-            {
                 return CreatePackageStatus.FieldEmpty;
-            }
-            if (CheckCardExist(cardId))
-            {
-                return CreatePackageStatus.AlreadyExist;
-            }
             
+            if (CheckCardExist(cardId))
+                return CreatePackageStatus.AlreadyExist;
+
             const string sql = "INSERT INTO \"PackageTable\"(p_id, p_cid, p_cname, p_cdamage)" +
                                "VALUES (:p_id, :p_cid, :p_cname, :p_cdamage)";
             _con.Open();
@@ -192,13 +184,10 @@ namespace SWEN1.MTCG.Server
         public AcquirePackageStatus AcquirePackage(string packId, string username)
         {
             if (!CheckPackageExist(packId))
-            {
                 return AcquirePackageStatus.NotExist;
-            }
+            
             if (GetUserCoins(username) < 5)
-            {
                 return AcquirePackageStatus.NoCoins;
-            }
 
             List<CardTable> cards = GetCardsFromPackage(packId);
             
@@ -223,7 +212,7 @@ namespace SWEN1.MTCG.Server
             return AcquirePackageStatus.Success;
         }
 
-        private static List<CardTable> GetCardsFromPackage(string packId)
+        private List<CardTable> GetCardsFromPackage(string packId)
         {
             const string sql = "SELECT p_cid, p_cname, p_cdamage FROM \"PackageTable\" WHERE p_id = :p_id";
             _con.Open();
@@ -247,12 +236,13 @@ namespace SWEN1.MTCG.Server
             return cards;
         }
 
-        private static void UpdateCoinsUser(string username)
+        private void UpdateCoinsUser(string username)
         {
-            const string sql2 = "UPDATE \"UserTable\" SET u_coins = u_coins - 5 WHERE u_username = :u_username";
+            const string sql2 = "UPDATE \"UserTable\" SET u_coins = u_coins - :cost WHERE u_username = :u_username";
             
             _con.Open();
             var cmd2 = new NpgsqlCommand(sql2, _con);
+            cmd2.Parameters.AddWithValue(":cost", 5);
             cmd2.Parameters.AddWithValue(":u_username", username);
             cmd2.Prepare();
             cmd2.ExecuteNonQuery();
@@ -278,10 +268,8 @@ namespace SWEN1.MTCG.Server
         public ConfigDeckStatus ConfigureDeck(string[] chosenCardIDs, string username)
         {
             if (chosenCardIDs.Length != 4)
-            {
                 return ConfigDeckStatus.NotFourCards;
-            }
-            
+
             const string sql = "SELECT c_id FROM \"UserCardTable\" WHERE u_username = :u_username";
             
             _con.Open();
@@ -294,9 +282,7 @@ namespace SWEN1.MTCG.Server
             List<string> stackCardIDs = new List<string>();
             
             while(rdr.Read())
-            {
                 stackCardIDs.Add(rdr.GetString(0));
-            }
 
             rdr.Close();
             _con.Close();
@@ -304,21 +290,11 @@ namespace SWEN1.MTCG.Server
             bool[] found = { false, false, false, false };
             
             for (var i = 0; i < chosenCardIDs.Length; i++)
-            {
-                for (var j = 0; j < stackCardIDs.Count; j++)
-                {
-                    if (chosenCardIDs[i] == stackCardIDs[j])
-                    {
-                        found[i] = true;
-                        break;
-                    }
-                }
-            }
-            
+                if (stackCardIDs.Any(stackCard => chosenCardIDs[i] == stackCard))
+                    found[i] = true;
+
             if (!found[0] || !found[1] || !found[2] || !found[3])
-            {
                 return ConfigDeckStatus.NoMatchCards;
-            }
 
             const string sql2 = "UPDATE \"UserCardTable\" SET c_indeck = :c_indeck WHERE u_username = :u_username";
             
@@ -420,11 +396,37 @@ namespace SWEN1.MTCG.Server
                 double winRate = 0;
                 
                 if (wins > 0 || losses > 0 || draws > 0)
-                {
-                    winRate = Math.Round((wins / (double) (wins + losses + draws)), 2);
-                }
+                    winRate = Math.Round((wins / (double) (wins + losses + draws)) * 100, 2);
 
                 stats = new StatsTable(username, wins, losses, draws, elo, winRate);
+            }
+            
+            rdr.Close();
+            _con.Close();
+            return stats;
+        }
+        
+        public Stats GetUserStatsWithoutUserName(string username)
+        {
+            const string sql = "SELECT s_wins, s_losses, s_draws, s_elo FROM \"StatsTable\" WHERE u_username = :u_username";
+            
+            _con.Open();
+            var cmd = new NpgsqlCommand(sql, _con);
+            cmd.Parameters.AddWithValue(":u_username", username);
+            cmd.Prepare();
+            
+            var rdr = cmd.ExecuteReader();
+            
+            Stats stats = null;
+            
+            while(rdr.Read())
+            {
+                var wins = rdr.GetInt32(0);
+                var losses = rdr.GetInt32(1);
+                var draws = rdr.GetInt32(2);
+                var elo = rdr.GetInt32(3);
+
+                stats = new Stats(wins, losses, draws, elo);
             }
             
             rdr.Close();
@@ -454,9 +456,7 @@ namespace SWEN1.MTCG.Server
                 double winRate = 0;
                 
                 if (wins > 0 || losses > 0 || draws > 0)
-                {
                     winRate = Math.Round((wins / (double) (wins + losses + draws)), 2);
-                }
 
                 scoreBoard.Add(new StatsTable(user, wins, losses, draws, elo, winRate));
             }
@@ -466,13 +466,23 @@ namespace SWEN1.MTCG.Server
             return scoreBoard;
         }
 
+        public void UpdateStatsAfterMatch(string winner, string loser)
+        {
+            UpdateStatsWin(winner);
+            UpdateStatsLoss(loser);
+        }
+        
+        public void UpdateStatsAfterMatchDraw(string player1, string player2)
+        {
+            UpdateStatsDraw(player1);
+            UpdateStatsDraw(player2);
+        }
+
         public CreateTradingDealStatus CreateTradingDeal(string username, string tradeId, string cardId, string searchType, double? minimumDamage)
         {
             if (string.IsNullOrEmpty(tradeId) || string.IsNullOrEmpty(cardId) || string.IsNullOrEmpty(searchType) || minimumDamage == null)
-            {
                 return CreateTradingDealStatus.FieldEmpty;
-            }
-            
+
             const string sql = "SELECT * FROM \"UserCardTable\" WHERE c_id = :c_id AND c_indeck = :c_indeck";
             
             _con.Open();
@@ -551,9 +561,7 @@ namespace SWEN1.MTCG.Server
             _con.Close();
             
             if (result == -1)
-            {
                 return DeleteTradingDealStatus.FromOtherUser;
-            }
 
             return DeleteTradingDealStatus.Success;
         }
@@ -592,9 +600,7 @@ namespace SWEN1.MTCG.Server
             _con.Close();
 
             if (username == tradeFromUser)
-            {
                 return ProcessTradingDealStatus.SameUser;
-            }
 
             const string sql2 = "SELECT c_name, c_damage FROM \"UserCardTable\" WHERE c_id = :c_id AND c_indeck = :c_indeck";
             _con.Open();
@@ -624,15 +630,13 @@ namespace SWEN1.MTCG.Server
             _con.Close();
 
             string offeredCardType = "Spell";
-            if (!offeredCardName.Contains("Spell"))
-            {
+            if (!offeredCardName.Contains("Spell", StringComparison.CurrentCultureIgnoreCase))
                 offeredCardType = "Monster";
-            }
 
-            if (offeredCardDamage < wantedMinimumDamage || offeredCardType != wantedSearchType)
-            {
+            if (offeredCardDamage < wantedMinimumDamage || 
+                !string.Equals(offeredCardType, wantedSearchType, StringComparison.CurrentCultureIgnoreCase)
+                )
                 return ProcessTradingDealStatus.NotWanted;
-            }
 
             UpdateCardUser(username, wantedCardId);
             UpdateCardUser(tradeFromUser, offeredCardId);
@@ -641,7 +645,7 @@ namespace SWEN1.MTCG.Server
             return ProcessTradingDealStatus.Success;
         }
 
-        private static void UpdateCardUser(string username, string cardId)
+        private void UpdateCardUser(string username, string cardId)
         {
             const string sql = "UPDATE \"UserCardTable\" SET u_username = :u_username WHERE c_id = :c_id";
             _con.Open();
@@ -653,7 +657,7 @@ namespace SWEN1.MTCG.Server
             _con.Close();
         }
         
-        private static int GetUserCoins(string username)
+        private int GetUserCoins(string username)
         {
             const string sql = "SELECT u_coins FROM \"UserTable\" WHERE u_username = :u_username";
             _con.Open();
@@ -675,7 +679,7 @@ namespace SWEN1.MTCG.Server
             return coins;
         }
 
-        private static bool CheckUserExist(string username)
+        private bool CheckUserExist(string username)
         {
             const string sql = "SELECT u_username FROM \"UserTable\" WHERE u_username = :u_username";
             
@@ -688,11 +692,11 @@ namespace SWEN1.MTCG.Server
             
             rdr.Close();
             _con.Close();
-            
+             
             return result;
         }
         
-        private static bool CheckCardExist(string cardId)
+        private bool CheckCardExist(string cardId)
         {
             const string sql = "SELECT p_cid FROM \"PackageTable\" WHERE p_cid = :p_cid";
             
@@ -726,7 +730,7 @@ namespace SWEN1.MTCG.Server
             return result;
         }
 
-        private static bool CheckTokenIdExist(int uid)
+        private bool CheckTokenIdExist(int uid)
         {
             const string sql = "SELECT t_id FROM \"TokenTable\" WHERE u_id = :u_id";
             
@@ -747,10 +751,8 @@ namespace SWEN1.MTCG.Server
         public string GetUsernameFromAuthKey(string authToken)
         {
             if (string.IsNullOrEmpty(authToken))
-            {
                 return null;
-            }
-            
+
             string sql = "SELECT \"UserTable\".u_username FROM \"UserTable\" INNER JOIN \"TokenTable\" ON \"UserTable\".u_id = \"TokenTable\".u_id WHERE \"TokenTable\".t_token = :t_token";
             
             _con.Open();
@@ -771,6 +773,47 @@ namespace SWEN1.MTCG.Server
             _con.Close();
             
             return username;
+        }
+
+        private void UpdateStatsWin(string winner)
+        {
+            string sql = "UPDATE \"StatsTable\" SET s_elo = s_elo + :plus, s_wins = s_wins + :incr WHERE u_username = :u_username";
+            
+            _con.Open();
+            var cmd = new NpgsqlCommand(sql, _con);
+            cmd.Parameters.AddWithValue(":plus", 3);
+            cmd.Parameters.AddWithValue(":incr", 1);
+            cmd.Parameters.AddWithValue(":u_username", winner);
+            cmd.Prepare();
+            cmd.ExecuteNonQuery();
+            _con.Close();
+        }
+        
+        private void UpdateStatsLoss(string loser)
+        {
+            string sql = "UPDATE \"StatsTable\" SET s_elo = s_elo - :minus, s_losses = s_losses + :incr WHERE u_username = :u_username";
+            
+            _con.Open();
+            var cmd = new NpgsqlCommand(sql, _con);
+            cmd.Parameters.AddWithValue(":minus", 3);
+            cmd.Parameters.AddWithValue(":incr", 1);
+            cmd.Parameters.AddWithValue(":u_username", loser);
+            cmd.Prepare();
+            cmd.ExecuteNonQuery();
+            _con.Close();
+        }
+        
+        private void UpdateStatsDraw(string player)
+        {
+            string sql = "UPDATE \"StatsTable\" SET s_draws = s_draws + :incr WHERE u_username = :u_username";
+            
+            _con.Open();
+            var cmd = new NpgsqlCommand(sql, _con);
+            cmd.Parameters.AddWithValue(":incr", 1);
+            cmd.Parameters.AddWithValue(":u_username", player);
+            cmd.Prepare();
+            cmd.ExecuteNonQuery();
+            _con.Close();
         }
     }
 }

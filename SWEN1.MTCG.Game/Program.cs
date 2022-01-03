@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using SWEN1.MTCG.GameClasses;
 
-namespace SWEN1.MTCG
+namespace SWEN1.MTCG.Game
 {
     class Program
     {
@@ -22,9 +21,7 @@ namespace SWEN1.MTCG
             };
 
             foreach (var card in list)
-            {
                 Console.WriteLine(card);
-            }
 
             /*Database database = new Database();
            

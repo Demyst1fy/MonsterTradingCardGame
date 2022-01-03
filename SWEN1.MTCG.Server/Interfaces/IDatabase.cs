@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
-using SWEN1.MTCG.GameClasses.Interfaces;
+using SWEN1.MTCG.Game;
+using SWEN1.MTCG.Game.Interfaces;
 using SWEN1.MTCG.Server.DatabaseClasses;
 
 namespace SWEN1.MTCG.Server.Interfaces
@@ -16,6 +17,7 @@ namespace SWEN1.MTCG.Server.Interfaces
         List<ICard> GetUserStack(string username);
         List<ICard> GetUserDeck(string username);
         StatsTable GetUserStats(string username);
+        Stats GetUserStatsWithoutUserName(string username);
         List<StatsTable> GetScoreBoard();
         List<TradeTable> GetTradingDeals();
         CreateTradingDealStatus CreateTradingDeal(string username, string tradeId, string cardId, string searchType, double? minimumDamage);
@@ -23,5 +25,7 @@ namespace SWEN1.MTCG.Server.Interfaces
         ProcessTradingDealStatus ProcessTradingDeal(string tradeId, string offeredCardId, string username);
         string GetUsernameFromAuthKey(string authToken);
         bool CheckPackageExist(string packId);
+        void UpdateStatsAfterMatch(string winner, string loser);
+        void UpdateStatsAfterMatchDraw(string player1, string player2);
     }
 }

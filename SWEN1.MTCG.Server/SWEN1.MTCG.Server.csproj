@@ -12,7 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\SWEN1.MTCG.GameClasses\SWEN1.MTCG.GameClasses.csproj" />
+      <ProjectReference Include="..\SWEN1.MTCG.Game\SWEN1.MTCG.Game.csproj" />
     </ItemGroup>
 
 </Project>

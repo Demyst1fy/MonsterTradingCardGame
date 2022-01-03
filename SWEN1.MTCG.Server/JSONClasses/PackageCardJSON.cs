@@ -1,12 +1,12 @@
-﻿namespace SWEN1.MTCG.Server.JSONClasses
+﻿namespace SWEN1.MTCG.Server.JsonClasses
 {
-    public class PackageCardJSON
+    public class PackageCardJson
     {
         public string Id { get; }
         public string Name { get; }
         public double Damage { get; }
         
-        public PackageCardJSON(string id, string name, double damage)
+        public PackageCardJson(string id, string name, double damage)
         {
             Id = id;
             Name = name;

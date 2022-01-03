@@ -1,11 +1,11 @@
-﻿namespace SWEN1.MTCG.Server.JSONClasses
+﻿namespace SWEN1.MTCG.Server.JsonClasses
 {
-    public class UserJSON
+    public class UserJson
     {
         public string Username { get; }
         public string Password { get; }
         
-        public UserJSON(string username, string password)
+        public UserJson(string username, string password)
         {
             Username = username;
             Password = password;

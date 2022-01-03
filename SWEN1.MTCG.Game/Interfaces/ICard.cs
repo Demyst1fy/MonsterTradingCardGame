@@ -1,4 +1,4 @@
-﻿namespace SWEN1.MTCG.GameClasses.Interfaces
+﻿namespace SWEN1.MTCG.Game.Interfaces
 {
     public interface ICard
     {
@@ -8,6 +8,6 @@
         Element Element { get; }
         Type Type { get; }
         double CompareElement(Element enemyCard);
-        bool CheckEffect(ICard enemyCard);
+        string CheckEffect(ICard enemyCard);
     }
 }

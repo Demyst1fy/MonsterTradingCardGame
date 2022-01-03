@@ -1,12 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWEN1.MTCG.GameClasses", "SWEN1.MTCG.GameClasses\SWEN1.MTCG.GameClasses.csproj", "{18849058-572E-467B-B725-9022768ACFAF}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWEN1.MTCG.Test", "SWEN1.MTCG.Test\SWEN1.MTCG.Test.csproj", "{40717642-DAB5-4C71-8BCE-759B5EB79E38}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWEN1.MTCG.Server", "SWEN1.MTCG.Server\SWEN1.MTCG.Server.csproj", "{0030CB44-7370-4BA6-9881-7A517CFEC336}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWEN1.MTCG", "SWEN1.MTCG\SWEN1.MTCG.csproj", "{12E72769-B5D2-4BF0-9A9F-3FF48478EDF2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWEN1.MTCG.Game", "SWEN1.MTCG.Game\SWEN1.MTCG.Game.csproj", "{12E72769-B5D2-4BF0-9A9F-3FF48478EDF2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -14,10 +12,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{18849058-572E-467B-B725-9022768ACFAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{18849058-572E-467B-B725-9022768ACFAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{18849058-572E-467B-B725-9022768ACFAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{18849058-572E-467B-B725-9022768ACFAF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{40717642-DAB5-4C71-8BCE-759B5EB79E38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{40717642-DAB5-4C71-8BCE-759B5EB79E38}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{40717642-DAB5-4C71-8BCE-759B5EB79E38}.Release|Any CPU.ActiveCfg = Release|Any CPU

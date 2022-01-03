@@ -1,12 +1,12 @@
-﻿namespace SWEN1.MTCG.Server.JSONClasses
+﻿namespace SWEN1.MTCG.Server.JsonClasses
 {
-    public class UserinfoJSON
+    public class UserinfoJson
     {
         public string Name { get; }
         public string Bio { get; }
         public string Image { get; }
         
-        public UserinfoJSON(string name, string bio, string image)
+        public UserinfoJson(string name, string bio, string image)
         {
             Name = name;
             Bio = bio;
