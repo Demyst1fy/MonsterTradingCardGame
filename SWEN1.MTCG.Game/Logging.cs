@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using System.Threading;
 using SWEN1.MTCG.Game.Interfaces;
 
 namespace SWEN1.MTCG.Game
@@ -18,7 +19,7 @@ namespace SWEN1.MTCG.Game
             Log = new StringBuilder();
             
             double avgElo = (double) (Player1.Stats.Elo + Player2.Stats.Elo)/2;
-            AppendLogWithLine($"{Player1.Username} vs {Player2.Username} ({avgElo})");
+            AppendLogWithLine($"{Player1.Username} vs {Player2.Username} (Average Elo: {avgElo})");
         }
 
         public void AppendLogWithLine(string text)

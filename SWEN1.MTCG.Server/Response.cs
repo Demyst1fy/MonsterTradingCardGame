@@ -14,13 +14,17 @@ namespace SWEN1.MTCG.Server
         {
             Status = status;
             Message = StatusMessage(status);
+            
             switch (mimeType)
             {
-                case "application/json": MimeType = "application/json";
+                case "application/json": 
+                    MimeType = "application/json";
                     break;
-                default: MimeType = "text/plain";
+                default: 
+                    MimeType = "text/plain";
                     break;
             }
+            
             ContentLength = body.Length;
             Body = body;
         }

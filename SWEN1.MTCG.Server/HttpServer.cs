@@ -15,7 +15,7 @@ namespace SWEN1.MTCG.Server
         private Thread _serverThread;
         private TcpListener _listener;
         private IServiceHandler _serviceHandler;
-        private ConcurrentBag<Match> _allBattles;
+        private ConcurrentQueue<Match> _allBattles;
         public void Start(int port)
         {
             if (_serverThread == null)
@@ -23,7 +23,7 @@ namespace SWEN1.MTCG.Server
                 IPAddress ipAddress = new IPAddress(0);
                 _listener = new TcpListener(ipAddress, port);
                 _serviceHandler = new ServiceHandler();
-                _allBattles = new ConcurrentBag<Match>();
+                _allBattles = new ConcurrentQueue<Match>();
                 _serverThread = new Thread(ServerHandler);
                 _serverThread.Start();
             }
@@ -60,19 +60,20 @@ namespace SWEN1.MTCG.Server
         {
             _listener.Start();
             
-            while(true)
+            while (true)
             {
                 TcpClient client = _listener.AcceptTcpClient();
-                ThreadPool.QueueUserWorkItem(ThreadProc, client);
+                ThreadPool.QueueUserWorkItem(HandleResponse, client);
             }
         }
 
-        private void ThreadProc(object obj)
+        private void HandleResponse(object obj)
         {
-            var client = (TcpClient) obj;
+            var client = (TcpClient)obj;
+
             NetworkStream stream = client.GetStream();
             string request = ReadRequest(stream);
-                
+
             IResponse response = _serviceHandler.HandleRequest(request, ref _allBattles);
 
             StringBuilder responseText = new StringBuilder();
@@ -91,8 +92,8 @@ namespace SWEN1.MTCG.Server
             byte[] data = Encoding.UTF8.GetBytes(responseText.ToString());
             stream.Write(data, 0, data.Length);
             
-            client.Close();
             stream.Close();
+            client.Close();
         }
     }
 }

@@ -55,7 +55,7 @@ namespace SWEN1.MTCG.Server
             return null;
         }
         
-        public Response HandleRequest(string request, ref ConcurrentBag<Match> allBattles)
+        public Response HandleRequest(string request, ref ConcurrentQueue<Match> allBattles)
         {
             _db = new Database();
 
@@ -340,7 +340,7 @@ namespace SWEN1.MTCG.Server
             return new Response(200, json, "application/json");
         }
 
-        private Response HandleBattle(string username, ref ConcurrentBag<Match> allMatches)
+        private Response HandleBattle(string username, ref ConcurrentQueue<Match> allMatches)
         {
             if (string.IsNullOrEmpty(username))
                 return new Response(401,"You are not logged in! (Authentication token invalid)");
@@ -359,24 +359,21 @@ namespace SWEN1.MTCG.Server
                 return new Response(400,"You have to set 4 cards for the deck!");
             
             Stats stats = _db.GetUserStatsWithoutUserName(username);
-            
             User user = new User(username, deck, stats);
 
             bool joinedMatch = false;
             
             foreach (var match in allMatches)
             {
-                if (match.PlayerCount < 2)
+                if (match.Player2 == null)
                 {
+                    if(string.Equals(user.Username, match.Player1.Username))
+                        return new Response(404,"You are already in queue!");
+                    
                     joinedMatch = true;
                     match.AddUser(user);
-
-                    Thread.Sleep(1000);
-                    while (match.Running)
-                    {
-                        Console.WriteLine("Match is running.");
-                        Thread.Sleep(1000);
-                    }
+                    
+                    match.ProcessRunningGame();
 
                     return new Response(200, match.Logger.LogString());
                 }
@@ -384,10 +381,10 @@ namespace SWEN1.MTCG.Server
 
             if (!joinedMatch)
             {
-                Match newMatch = new Match(user);
-                allMatches.Add(newMatch);
+                Match newMatch = new Match(user, 100);
+                allMatches.Enqueue(newMatch);
 
-                while (newMatch.PlayerCount < 2)
+                while (newMatch.Player2 == null)
                 {
                     Console.WriteLine("Waiting for 2nd Player.");
                     Thread.Sleep(1000);
@@ -395,12 +392,8 @@ namespace SWEN1.MTCG.Server
                 
                 Logging logger = new Logging(newMatch.Player1, newMatch.Player2);
                 newMatch.BattleAction(logger);
-                
-                while (newMatch.Running)
-                {
-                    Console.WriteLine("Match is running.");
-                    Thread.Sleep(1000);
-                }
+
+                newMatch.ProcessRunningGame();
 
                 if (newMatch.Player1.Deck.Count <= 0)
                 {
@@ -415,7 +408,8 @@ namespace SWEN1.MTCG.Server
                     _db.UpdateStatsAfterMatchDraw(newMatch.Player1.Username, newMatch.Player2.Username);
                 }
 
-                return new Response(200, newMatch.Logger.LogString());
+                allMatches.TryDequeue(out newMatch);
+                return new Response(200, newMatch?.Logger.LogString());
             }
 
             return new Response(400,"Error!");

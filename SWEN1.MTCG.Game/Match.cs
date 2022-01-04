@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using SWEN1.MTCG.Game.Interfaces;
 using IUser = SWEN1.MTCG.Game.Interfaces.IUser;
 
@@ -7,27 +8,22 @@ namespace SWEN1.MTCG.Game
     public class Match
     {
         public ILogging Logger { get; set; }
-        private int MaxRound = 100;
-
         public IUser Player1 { get; }
         public IUser Player2 { get; private set; }
-        public int PlayerCount { get; private set; } = 1;
-        
         private int Player1RoundWon { get; set; }
         private int Player2RoundWon { get; set; }
-        
         public bool Running { get; private set; }
+        private readonly int _maxRound;
 
-
-        public Match(IUser player1)
+        public Match(IUser player1, int maxRound)
         {
             Player1 = player1;
+            _maxRound = maxRound;
         }
 
         public void AddUser(IUser player2)
         {
             Player2 = player2;
-            PlayerCount++;
         }
 
         public void BattleAction(ILogging logger)
@@ -37,7 +33,7 @@ namespace SWEN1.MTCG.Game
             Running = true;
             int round = 1;
             
-            while (round <= MaxRound && Player1.Deck.Count > 0 && Player2.Deck.Count > 0)
+            while (round <= _maxRound && Player1.Deck.Count > 0 && Player2.Deck.Count > 0)
             {
                 var rd = new Random();
 
@@ -121,9 +117,18 @@ namespace SWEN1.MTCG.Game
                 Logger.AppendLogWithLine($"{Player1.Username} won the game with {Player1RoundWon} of {round} rounds!");
             
             else
-                Logger.AppendLogWithLine($"Over {MaxRound} Rounds were played, let's decide it to a draw!");
+                Logger.AppendLogWithLine($"Over {_maxRound} Rounds were played, let's decide it to a draw!");
 
             Running = false;
+        }
+
+        public void ProcessRunningGame()
+        {
+            Thread.Sleep(1000);
+            while (Running)
+            {
+                Thread.Sleep(1000);
+            }
         }
     }
 }
