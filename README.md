@@ -12,13 +12,13 @@ SWEN1 Semesterprojekt - MonsterTradingCardGame
 
 ## Tracked time
 
-Card-Class: 4h
-HttpServer/Threading: 5h
-Parse Request: 4h
-Database connection & methods: 15h
-Servicehandler: 12h
-Battle: 5h
-Unit-Tests: 8h
+* Card-Class: 4h
+* HttpServer/Threading: 5h
+* Parse Request: 4h
+* Database connection & methods: 15h
+* Servicehandler: 12h
+* Battle: 5h
+* Unit-Tests: 8h
 
 ## Link to GIT
 
