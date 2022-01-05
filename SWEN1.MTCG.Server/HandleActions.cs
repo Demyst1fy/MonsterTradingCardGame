@@ -15,11 +15,15 @@ namespace SWEN1.MTCG.Server
 {
     public class HandleActions : IHandleActions
     {
-        private IDatabase _database;
-
-        public HandleActions(IDatabase database)
+        private readonly IDatabase _database;
+        public HandleActions()
         {
-            _database = database;
+            _database = new Database();
+        }
+
+        public string GetUsernameFromAuthKey(string authToken)
+        {
+            return _database.GetUsernameFromDatabase(authToken);
         }
         
         public IResponse HandleRegistration(string requestContent)
@@ -348,8 +352,8 @@ namespace SWEN1.MTCG.Server
             {
                 case CreateTradingDealStatus.FieldEmpty: 
                     return new Response(400,"Fields must not be empty!");
-                case CreateTradingDealStatus.CardInDeck: 
-                    return new Response(400,"Card must not be in your deck!");
+                case CreateTradingDealStatus.CardInDeckOrNotOwn: 
+                    return new Response(400,"Card is either in your deck or you don't own it!");
                 case CreateTradingDealStatus.Success: default: 
                     return new Response(200,"You have created a trading deal!");
             }

@@ -5,6 +5,7 @@ namespace SWEN1.MTCG.Server.Interfaces
 {
     public interface IHandleActions
     {
+        string GetUsernameFromAuthKey(string authToken);
         IResponse HandleRegistration(string requestContent);
         IResponse HandleLogin(string requestContent);
         IResponse HandleCreatePackage(string requestContent, string username);

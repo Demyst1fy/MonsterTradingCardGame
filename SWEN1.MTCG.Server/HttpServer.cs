@@ -67,7 +67,7 @@ namespace SWEN1.MTCG.Server
 
         private void HandleResponse(object obj)
         {
-            var client = (TcpClient)obj;
+            TcpClient client = (TcpClient)obj;
 
             NetworkStream stream = client.GetStream();
             string request = ReadRequest(stream);
@@ -80,17 +80,10 @@ namespace SWEN1.MTCG.Server
             IResponse response = serviceHandler.HandleRequest(parsedRequest, ref _allBattles);
 
             StringBuilder responseText = new StringBuilder();
-            responseText.Append($"Status: {response.Status} {response.Message}");
-            responseText.Append($"{Environment.NewLine}");
-
-            responseText.Append($"Mimetype: {response.MimeType}");
-            responseText.Append($"{Environment.NewLine}");
-
-            responseText.Append($"Content-Length: {response.ContentLength}");
-            responseText.Append($"{Environment.NewLine}");
-
-            responseText.Append($"Response-Body: {response.Body}");
-            responseText.Append($"{Environment.NewLine}");
+            responseText.AppendLine($"Status: {response.Status} {response.Message}");
+            responseText.AppendLine($"Mimetype: {response.MimeType}");
+            responseText.AppendLine($"Content-Length: {response.ContentLength}");
+            responseText.AppendLine($"Response-Body: {response.Body}");
 
             byte[] data = Encoding.UTF8.GetBytes(responseText.ToString());
             stream.Write(data, 0, data.Length);

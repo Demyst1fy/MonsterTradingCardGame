@@ -24,7 +24,7 @@ namespace SWEN1.MTCG.Server.Interfaces
         CreateTradingDealStatus CreateTradingDeal(string username, string tradeId, string cardId, string searchType, double? minimumDamage);
         DeleteTradingDealStatus DeleteTradingDeal(string tradeId, string username);
         ProcessTradingDealStatus ProcessTradingDeal(string tradeId, string offeredCardId, string username);
-        string GetUsernameFromAuthKey(string authToken);
+        string GetUsernameFromDatabase(string authToken);
         bool CheckPackageExist(string packId);
         void UpdateStatsAfterMatch(string winner, string loser);
         void UpdateStatsAfterMatchDraw(string player1, string player2);

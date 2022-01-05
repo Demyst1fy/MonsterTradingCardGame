@@ -7,13 +7,10 @@ namespace SWEN1.MTCG.Server
 {
     public class ServiceHandler : IServiceHandler
     {
-        private IDatabase _database;
-        private IHandleActions _action;
-
+        private readonly IHandleActions _action;
         public ServiceHandler()
         {
-            _database = new Database();
-            _action = new HandleActions(_database);
+            _action = new HandleActions();
         }
         
         public ServiceHandler(IHandleActions action)
@@ -65,7 +62,7 @@ namespace SWEN1.MTCG.Server
 
             string usernameFromAuthKey = null;
             if (!string.IsNullOrEmpty(parsedRequest.AuthToken))
-                usernameFromAuthKey = _database.GetUsernameFromAuthKey(parsedRequest.AuthToken);
+                usernameFromAuthKey = _action.GetUsernameFromAuthKey(parsedRequest.AuthToken);
             
             switch (parsedRequest.Method)
             {
