@@ -46,7 +46,7 @@ namespace SWEN1.MTCG.Test.GameClasses.Test
             _user1.Setup(mock => mock.Deck).Returns(_deck1);
             _user2.Setup(mock => mock.Deck).Returns(_deck2);
             
-            var game = new Match(_user1.Object, 1);
+            IMatch game = new Match(_user1.Object, 1);
             game.AddUser(_user2.Object);
             game.BattleAction(_logging.Object);
 
@@ -64,7 +64,8 @@ namespace SWEN1.MTCG.Test.GameClasses.Test
             _user2.Setup(mock => mock.Deck).Returns(_deck2);
 
             int maxRounds = 100;
-            var game = new Match(_user1.Object, maxRounds);
+            
+            IMatch game = new Match(_user1.Object, maxRounds);
             game.AddUser(_user2.Object);
             
             game.BattleAction(_logging.Object);

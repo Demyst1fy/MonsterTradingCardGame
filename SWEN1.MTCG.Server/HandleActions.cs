@@ -256,7 +256,7 @@ namespace SWEN1.MTCG.Server
             return new Response(200, json, "application/json");
         }
 
-        public IResponse HandleBattle(string username, ref ConcurrentQueue<Match> allMatches)
+        public IResponse HandleBattle(string username, ref ConcurrentQueue<IMatch> allMatches)
         {
             if (string.IsNullOrEmpty(username))
                 return new Response(401,"You are not logged in! (Authentication token invalid)");
@@ -297,7 +297,7 @@ namespace SWEN1.MTCG.Server
 
             if (!joinedMatch)
             {
-                Match newMatch = new Match(user, 100);
+                IMatch newMatch = new Match(user, 100);
                 allMatches.Enqueue(newMatch);
 
                 while (newMatch.Player2 == null)

@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using SWEN1.MTCG.Game;
+using SWEN1.MTCG.Game.Interfaces;
 using SWEN1.MTCG.Server.Interfaces;
-
 
 namespace SWEN1.MTCG.Server
 {
@@ -60,7 +59,7 @@ namespace SWEN1.MTCG.Server
             return null;
         }
         
-        public IResponse HandleRequest(IRequest parsedRequest, ref ConcurrentQueue<Match> allBattles)
+        public IResponse HandleRequest(IRequest parsedRequest, ref ConcurrentQueue<IMatch> allBattles)
         {
             string subQuery = ParseQuery(parsedRequest.Query);
 

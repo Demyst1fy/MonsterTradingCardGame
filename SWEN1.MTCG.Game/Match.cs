@@ -5,11 +5,11 @@ using IUser = SWEN1.MTCG.Game.Interfaces.IUser;
 
 namespace SWEN1.MTCG.Game
 {
-    public class Match
+    public class Match : IMatch
     {
         public ILogging Logger { get; set; }
         public IUser Player1 { get; }
-        public IUser Player2 { get; private set; }
+        public IUser Player2 { get; set; }
         private int Player1RoundWon { get; set; }
         private int Player2RoundWon { get; set; }
         private bool Running { get; set; }

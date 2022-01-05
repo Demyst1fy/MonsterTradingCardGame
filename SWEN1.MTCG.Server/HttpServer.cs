@@ -5,7 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using SWEN1.MTCG.Game;
+using SWEN1.MTCG.Game.Interfaces;
 using SWEN1.MTCG.Server.Interfaces;
 
 namespace SWEN1.MTCG.Server
@@ -14,14 +14,14 @@ namespace SWEN1.MTCG.Server
     {
         private Thread _serverThread;
         private TcpListener _listener;
-        private ConcurrentQueue<Match> _allBattles;
+        private ConcurrentQueue<IMatch> _allBattles;
         public void Start(int port)
         {
             if (_serverThread == null)
             {
                 IPAddress ipAddress = new IPAddress(0);
                 _listener = new TcpListener(ipAddress, port);
-                _allBattles = new ConcurrentQueue<Match>();
+                _allBattles = new ConcurrentQueue<IMatch>();
                 _serverThread = new Thread(ServerHandler);
                 _serverThread.Start();
             }

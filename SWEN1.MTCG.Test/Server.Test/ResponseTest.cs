@@ -11,7 +11,7 @@ namespace SWEN1.MTCG.Test.Server.Test
         public void Test_ResponseMessage()
         {
             string responseBodyMessage = "You are now registered!";
-            IResponse response = new Response(201,responseBodyMessage);
+            IResponse response = new Response(201, responseBodyMessage);
             
             Assert.AreEqual(201, response.Status);
             Assert.AreEqual("Created", response.Message);

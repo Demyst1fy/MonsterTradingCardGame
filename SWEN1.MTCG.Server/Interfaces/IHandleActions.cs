@@ -1,5 +1,5 @@
 using System.Collections.Concurrent;
-using SWEN1.MTCG.Game;
+using SWEN1.MTCG.Game.Interfaces;
 
 namespace SWEN1.MTCG.Server.Interfaces
 {
@@ -18,7 +18,7 @@ namespace SWEN1.MTCG.Server.Interfaces
         IResponse HandleGetUserData(string subQuery, string username);
         IResponse HandleShowStats(string username);
         IResponse HandleShowScoreboard(string username);
-        IResponse HandleBattle(string username, ref ConcurrentQueue<Match> allMatches);
+        IResponse HandleBattle(string username, ref ConcurrentQueue<IMatch> allMatches);
         IResponse HandleCreateTradingDeal(string requestContent, string username);
         IResponse HandleShowTradingDeals(string username);
         IResponse HandleDeleteTradingDeal(string subQuery, string username);

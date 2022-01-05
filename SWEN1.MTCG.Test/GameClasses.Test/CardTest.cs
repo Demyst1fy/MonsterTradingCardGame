@@ -28,13 +28,13 @@ namespace SWEN1.MTCG.Test.GameClasses.Test
             Assert.AreEqual(Element.Water, card.Element);
             Assert.AreEqual(Type.Spell, card.Type);
         }
-        
+
         [Test]
         public void Test_AssignUserWithStackAndDeck()
         {
             User user1 = new User("Jay", new List<ICard>(), new Stats(2, 0, 1, 106));
             user1.Deck.Add(new Card("67f9048f-99b8-4ae4-b866-d8008d00c53d", "FireOrk", 10));
-            user1.Deck.Add(new Card("70962948-2bf7-44a9-9ded-8c68eeac7793","FireSpell", 90));
+            user1.Deck.Add(new Card("70962948-2bf7-44a9-9ded-8c68eeac7793", "FireSpell", 90));
 
             foreach (var card in user1.Deck)
             {
@@ -56,16 +56,7 @@ namespace SWEN1.MTCG.Test.GameClasses.Test
                 }
             }
         }
-        
-        [Test]
-        public void Test_MonsterEffect()
-        {
-            var card1 = new Card("67f9048f-99b8-4ae4-b866-d8008d00c53d", "FireOrk", 45);
-            var card2 = new Card("70962948-2bf7-44a9-9ded-8c68eeac7793","WaterWizard", 70);
 
-            Assert.True(!string.IsNullOrEmpty(card1.CheckEffect(card2)));
-        }
-        
         [Test]
         public void Test_DamageAdjustment_IncreaseAndDecrease()
         {
