@@ -23,7 +23,7 @@ namespace SWEN1.MTCG.Test.GameClasses.Test
         private Mock<ILogging> _logging;
 
         [SetUp]
-        public void init()
+        public void Init()
         {
             _user1 = new Mock<IUser>();
             _user2 = new Mock<IUser>();
@@ -46,9 +46,8 @@ namespace SWEN1.MTCG.Test.GameClasses.Test
             _user1.Setup(mock => mock.Deck).Returns(_deck1);
             _user2.Setup(mock => mock.Deck).Returns(_deck2);
             
-            var game = new Match(_user1.Object, 100);
+            var game = new Match(_user1.Object, 1);
             game.AddUser(_user2.Object);
-            
             game.BattleAction(_logging.Object);
 
             _card1.Verify(x => x.CompareElement(_card2.Object.Element), Times.Never);
@@ -64,13 +63,14 @@ namespace SWEN1.MTCG.Test.GameClasses.Test
             _user1.Setup(mock => mock.Deck).Returns(_deck1);
             _user2.Setup(mock => mock.Deck).Returns(_deck2);
 
-            var game = new Match(_user1.Object, 1);
+            int maxRounds = 100;
+            var game = new Match(_user1.Object, maxRounds);
             game.AddUser(_user2.Object);
             
             game.BattleAction(_logging.Object);
 
-            _card1.Verify(x => x.CompareElement(_card2.Object.Element), Times.Once);
-            _card2.Verify(x => x.CompareElement(_card1.Object.Element), Times.Once);
+            _card1.Verify(x => x.CompareElement(_card2.Object.Element), Times.Exactly(maxRounds));
+            _card2.Verify(x => x.CompareElement(_card1.Object.Element), Times.Exactly(maxRounds));
         }
     }
 }

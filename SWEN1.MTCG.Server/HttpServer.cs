@@ -14,7 +14,6 @@ namespace SWEN1.MTCG.Server
     {
         private Thread _serverThread;
         private TcpListener _listener;
-        private IServiceHandler _serviceHandler;
         private ConcurrentQueue<Match> _allBattles;
         public void Start(int port)
         {
@@ -22,7 +21,6 @@ namespace SWEN1.MTCG.Server
             {
                 IPAddress ipAddress = new IPAddress(0);
                 _listener = new TcpListener(ipAddress, port);
-                _serviceHandler = new ServiceHandler();
                 _allBattles = new ConcurrentQueue<Match>();
                 _serverThread = new Thread(ServerHandler);
                 _serverThread.Start();
@@ -73,8 +71,13 @@ namespace SWEN1.MTCG.Server
 
             NetworkStream stream = client.GetStream();
             string request = ReadRequest(stream);
+            
+            IServiceHandler serviceHandler = new ServiceHandler();
 
-            IResponse response = _serviceHandler.HandleRequest(request, ref _allBattles);
+            Console.WriteLine($"{request} {Environment.NewLine}");
+            IRequest parsedRequest = serviceHandler.ParseRequest(request);
+            
+            IResponse response = serviceHandler.HandleRequest(parsedRequest, ref _allBattles);
 
             StringBuilder responseText = new StringBuilder();
             responseText.Append($"Status: {response.Status} {response.Message}");

@@ -10,7 +10,7 @@ namespace SWEN1.MTCG.Game
         public double Damage { get; }
         public Element Element { get; }
         public Type Type { get; }
-        
+
         public Card(string id, string name, double damage)
         {
             Id = id;
@@ -21,6 +21,10 @@ namespace SWEN1.MTCG.Game
                 Element = Element.Fire;
             else if (name.Contains("Water", StringComparison.OrdinalIgnoreCase)) 
                 Element = Element.Water;
+            else if (name.Contains("Light", StringComparison.OrdinalIgnoreCase)) 
+                Element = Element.Light;
+            else if (name.Contains("Dark", StringComparison.OrdinalIgnoreCase)) 
+                Element = Element.Dark;
             else 
                 Element = Element.Normal;
 
@@ -38,6 +42,10 @@ namespace SWEN1.MTCG.Game
                 Type = Type.Kraken;
             else if (name.Contains("Elf", StringComparison.OrdinalIgnoreCase)) 
                 Type = Type.Elf;
+            else if (name.Contains("Vampire", StringComparison.OrdinalIgnoreCase)) 
+                Type = Type.Vampire;
+            else if (name.Contains("Fairy", StringComparison.OrdinalIgnoreCase)) 
+                Type = Type.Fairy;
             else 
                 Type = Type.Spell;
         }
@@ -51,6 +59,8 @@ namespace SWEN1.MTCG.Game
                 case Element.Water when enemyElement == Element.Fire:
                 case Element.Fire when enemyElement == Element.Normal:
                 case Element.Normal when enemyElement == Element.Water:
+                case Element.Dark when enemyElement == Element.Light:
+                case Element.Light when enemyElement == Element.Dark:
                 {
                     damageAdj = Damage * 2;
                     break;
@@ -62,9 +72,20 @@ namespace SWEN1.MTCG.Game
                     damageAdj = Damage * 0.5;
                     break;
                 }
-                default: 
+                case Element.Fire when enemyElement == Element.Fire:
+                case Element.Water when enemyElement == Element.Water:
+                case Element.Dark when enemyElement == Element.Dark:
+                case Element.Light when enemyElement == Element.Light:
+                case Element.Normal when enemyElement == Element.Normal:
+                {
                     damageAdj = Damage * 0;
                     break;
+                }
+                default:
+                {
+                    damageAdj = Damage;
+                    break;
+                }
             }
 
             return damageAdj;
@@ -89,6 +110,9 @@ namespace SWEN1.MTCG.Game
                     break;
                 case Type.Spell when enemyCard.Type == Type.Kraken:
                     result = $"{enemyCard.Name} is immune against spells!";
+                    break;
+                case Type.Vampire when enemyCard.Type == Type.Fairy && enemyCard.Element == Element.Light:
+                    result = $"{Name} is going blind due to the brightness of {enemyCard.Name}!";
                     break;
                 default:
                     result = null;

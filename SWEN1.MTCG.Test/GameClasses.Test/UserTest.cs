@@ -8,7 +8,7 @@ namespace SWEN1.MTCG.Test.GameClasses.Test
     public class UserTest
     {
         [Test]
-        public void Test_CallUser()
+        public void Test_GetWinRate()
         {
             var user1 = new User("Jay", new List<ICard>(), new Stats(3, 1, 1, 109));
             Assert.AreEqual("Jay", user1.Username);

@@ -11,6 +11,7 @@ namespace SWEN1.MTCG.Server.Interfaces
         LoginStatus LoginUser(string username, string password);
         CreatePackageStatus CreatePackage(string packId, string cardId, string cardName, double cardDamage);
         AcquirePackageStatus AcquirePackage(string packId, string username);
+        List<TransactionTable> GetTransactions(string username);
         UserTable GetUserData(string username);
         EditUserDataStatus EditUserData(string username, string fullname, string bio, string image);
         ConfigDeckStatus ConfigureDeck(string[] chosenCardIDs, string username);

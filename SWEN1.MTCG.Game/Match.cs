@@ -12,7 +12,7 @@ namespace SWEN1.MTCG.Game
         public IUser Player2 { get; private set; }
         private int Player1RoundWon { get; set; }
         private int Player2RoundWon { get; set; }
-        public bool Running { get; private set; }
+        private bool Running { get; set; }
         private readonly int _maxRound;
 
         public Match(IUser player1, int maxRound)
@@ -50,44 +50,55 @@ namespace SWEN1.MTCG.Game
                 foreach (var player1Card in myCards)
                     Logger.AppendLogWithLine($"- {player1Card.Name} ({player1Card.Damage} Damage)");
                 
-
                 Logger.AppendLogWithLine($"{Environment.NewLine}{Player2.Username}'s DeckList:");
                 foreach (var player2Card in enemyCards)
                     Logger.AppendLogWithLine($"- {player2Card.Name} ({player2Card.Damage} Damage)");
                 
-
                 Logger.AppendLogWithLine($"{Environment.NewLine}Round {round}");
                 Logger.AppendLogWithLine($"{Player1.Username}: {myCard.Name} ({myCard.Damage} Damage) " +
                                          $"VS {Player2.Username}: {enemyCard.Name} ({enemyCard.Damage} Damage)");
 
-                double myDamageAdj = 0;
-                double enemyDamageAdj = 0;
+                double myDamageAdj = myCard.Damage;
+                double enemyDamageAdj = enemyCard.Damage;
 
                 string myMonsterStatus = myCard.CheckEffect(enemyCard);
                 string enemyMonsterStatus = enemyCard.CheckEffect(myCard);
 
                 if (string.IsNullOrEmpty(myMonsterStatus) && string.IsNullOrEmpty(enemyMonsterStatus))
                 {
-                    if (myCard.Type != Type.Spell && enemyCard.Type != Type.Spell)
-                    {
-                        myDamageAdj = myCard.Damage;
-                        enemyDamageAdj = enemyCard.Damage;
-                    }
-                
-                    else
+                    if (myCard.Type == Type.Spell || enemyCard.Type == Type.Spell)
                     {
                         myDamageAdj = myCard.CompareElement(enemyCard.Element);
                         enemyDamageAdj = enemyCard.CompareElement(myCard.Element);
                         Logger.AppendLogWithLine($"=> {myCard.Damage} VS {enemyCard.Damage} -> {myDamageAdj} VS {enemyDamageAdj}{Environment.NewLine}");
                     }
                 }
-
-                else
+                else if (!string.IsNullOrEmpty(myMonsterStatus))
                 {
                     Logger.AppendLogWithLine(myMonsterStatus);
+                }
+                else
+                {
                     Logger.AppendLogWithLine(enemyMonsterStatus);
                 }
 
+                // Player 1 crit-chance 1/10
+                if (rd.Next(10) == 0 && string.IsNullOrEmpty(myMonsterStatus))
+                {
+                    myDamageAdj *= 2;
+                    Logger.AppendLogWithLine($"{myCard.Name} critical damage!");
+                    Logger.AppendLogWithLine($"=> {myDamageAdj} VS {enemyDamageAdj}{Environment.NewLine}");
+                }
+
+                // Player 2 crit-chance 1/10
+                if (rd.Next(10) == 0 && string.IsNullOrEmpty(enemyMonsterStatus))
+                {
+                    enemyDamageAdj *= 2;
+                    Logger.AppendLogWithLine($"{enemyCard.Name} critical damage!");
+                    Logger.AppendLogWithLine($"=> {myDamageAdj} VS {enemyDamageAdj}{Environment.NewLine}");
+                }
+                
+                // Player 1 wins
                 if (myDamageAdj > enemyDamageAdj || !string.IsNullOrEmpty(enemyMonsterStatus))
                 {
                     Logger.AppendLogWithLine($"=> {myCard.Name} wins.{Environment.NewLine}");
@@ -96,6 +107,7 @@ namespace SWEN1.MTCG.Game
                     Player1RoundWon++;
                 }
                 
+                // Player 2 wins
                 else if (myDamageAdj < enemyDamageAdj || !string.IsNullOrEmpty(myMonsterStatus))
                 {
                     Logger.AppendLogWithLine($"=> {enemyCard.Name} wins.{Environment.NewLine}");
