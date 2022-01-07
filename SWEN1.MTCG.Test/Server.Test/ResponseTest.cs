@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using SWEN1.MTCG.Game;
 using SWEN1.MTCG.Server;
 using SWEN1.MTCG.Server.Interfaces;
 

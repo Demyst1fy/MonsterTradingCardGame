@@ -18,7 +18,7 @@ namespace SWEN1.MTCG.Server
         private readonly IDatabase _database;
         public HandleActions()
         {
-            _database = new Database();
+            _database = Database.GetDataBase();
         }
 
         public string GetUsernameFromAuthKey(string authToken)

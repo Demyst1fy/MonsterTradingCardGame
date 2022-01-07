@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Npgsql;
 
 using SWEN1.MTCG.Game;
@@ -13,21 +12,31 @@ namespace SWEN1.MTCG.Server
 {
     public class Database : IDatabase
     {
-        private readonly string host = "localhost";
-        private readonly int port = 5432;
-        private readonly string dbusername = "postgres";
-        private readonly string dbpassword = "postgres";
-        private readonly string dbname = "mtcg";
+        private static Database _dbinstance;
+        
+        private readonly string _host = "localhost";
+        private readonly int _port = 5432;
+        private readonly string _dbusername = "postgres";
+        private readonly string _dbpassword = "postgres";
+        private readonly string _dbname = "mtcg";
 
         private string _conString;
         
-        public Database()
+        private Database()
         {
-            _conString = $"Host={host};" +
-                         $"Port={Convert.ToString(port)};" +
-                         $"Username={dbusername};" +
-                         $"Password={dbpassword};" +
-                         $"Database={dbname}";
+            _conString = $"Host={_host};" +
+                         $"Port={Convert.ToString(_port)};" +
+                         $"Username={_dbusername};" +
+                         $"Password={_dbpassword};" +
+                         $"Database={_dbname}";
+        }
+
+        public static IDatabase GetDataBase()
+        {
+            if (_dbinstance == null)
+                _dbinstance = new Database();
+
+            return _dbinstance;
         }
 
         private NpgsqlConnection ConOpen()

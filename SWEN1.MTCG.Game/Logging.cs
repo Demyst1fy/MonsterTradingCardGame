@@ -1,6 +1,5 @@
 using System;
 using System.Text;
-using System.Threading;
 using SWEN1.MTCG.Game.Interfaces;
 
 namespace SWEN1.MTCG.Game

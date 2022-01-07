@@ -1,5 +1,3 @@
-using System;
-
 namespace SWEN1.MTCG.Server.DatabaseClasses
 {
     public class TransactionTable

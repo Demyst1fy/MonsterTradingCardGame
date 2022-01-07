@@ -1,13 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
 using Moq;
 using NUnit.Framework;
 using SWEN1.MTCG.Game;
 using SWEN1.MTCG.Game.Interfaces;
 using Match = SWEN1.MTCG.Game.Match;
 
-namespace SWEN1.MTCG.Test.GameClasses.Test
+namespace SWEN1.MTCG.Test.Game.Test
 {
     public class MatchTest
     {

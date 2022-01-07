@@ -3,7 +3,7 @@ using NUnit.Framework;
 using SWEN1.MTCG.Game;
 using SWEN1.MTCG.Game.Interfaces;
 
-namespace SWEN1.MTCG.Test.GameClasses.Test
+namespace SWEN1.MTCG.Test.Game.Test
 {
     public class UserTest
     {

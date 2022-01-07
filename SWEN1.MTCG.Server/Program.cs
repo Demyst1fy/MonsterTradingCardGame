@@ -3,7 +3,7 @@ using SWEN1.MTCG.Server.Interfaces;
 
 namespace SWEN1.MTCG.Server
 {
-    class Program
+    static class Program
     {
         static void Main(string[] args)
         {
