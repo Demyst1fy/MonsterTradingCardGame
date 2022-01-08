@@ -39,6 +39,25 @@ Architektur:
 * Persistence layer: ServiceHandler
 * Database layer: HandleActions & Database
 
+## Implementierte Funktionen
+
+Grundfunktionen:
+* Registrierung & Login (mit Authentifizierungsschlüssel)
+* Packs erstellen und kaufen
+* Stack & Deck erstellen/konfigurieren/anzeigen
+* Kampfsystem (mit Crit als Unique Feature)
+* Statistiken & Scoreboard
+* Profilbearbeitung
+* Tauschhandel (Karte vs Karte)
+
+Optimale Features:
+* Mehrere Elemente & Monstertypen:
+  * Elemente: Dark & Light
+  * Monstertypen: Vampire & Fairy
+* Alle 10 gespielte Matches -> +2 Coins
+* Verlauf der Transaktionen
+* Winrate in Statistiken
+
 ## Lessons learned
 
 Anfangs habe ich bei meiner Solution für jede Klasse ein Projekt erstellt, worauf ich dann später gemerkt habe, dass Konflikte
