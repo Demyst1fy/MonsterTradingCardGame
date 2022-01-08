@@ -270,8 +270,8 @@ namespace SWEN1.MTCG.Server
             foreach (var match in allMatches)
             {
                 Console.WriteLine(match.Player2 == null
-                    ? $"Battle: {match.Player1.Username} wartet"
-                    : $"Battle: {match.Player1.Username} gegen {match.Player2.Username}");
+                    ? $"Battle: {match.Player1.Username} is waiting in queue."
+                    : $"Battle: {match.Player1.Username} vs {match.Player2.Username}");
             }
 
             List<ICard> deck = _database.GetUserDeck(username);
@@ -316,17 +316,11 @@ namespace SWEN1.MTCG.Server
                 newMatch.ProcessRunningGame();
 
                 if (newMatch.Player1.Deck.Count <= 0)
-                {
                     _database.UpdateStatsAfterMatch(newMatch.Player2.Username, newMatch.Player1.Username);
-                }
                 else if (newMatch.Player2.Deck.Count <= 0)
-                {
                     _database.UpdateStatsAfterMatch(newMatch.Player1.Username, newMatch.Player2.Username);
-                }
                 else
-                {
                     _database.UpdateStatsAfterMatchDraw(newMatch.Player1.Username, newMatch.Player2.Username);
-                }
 
                 allMatches.TryDequeue(out newMatch);
                 return new Response(200, newMatch?.Logger.LogString());
