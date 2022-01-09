@@ -14,16 +14,16 @@ namespace SWEN1.MTCG.Game
         {
             Player1 = player1;
             Player2 = player2;
-
             Log = new StringBuilder();
             
             double avgElo = (double) (Player1.Stats.Elo + Player2.Stats.Elo)/2;
+            
             AppendLogWithLine($"{Player1.Username} vs {Player2.Username} (Average Elo: {avgElo})");
         }
 
         public void AppendLogWithLine(string text)
         {
-            Log.Append($"{text}{Environment.NewLine}");
+            Log.AppendLine($"{text}");
             Console.WriteLine(text);
         }
 

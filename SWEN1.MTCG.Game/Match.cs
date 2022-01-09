@@ -86,7 +86,7 @@ namespace SWEN1.MTCG.Game
                 if (rd.Next(10) == 0 && string.IsNullOrEmpty(myMonsterStatus))
                 {
                     myDamageAdj *= 2;
-                    Logger.AppendLogWithLine($"{myCard.Name} critical damage!");
+                    Logger.AppendLogWithLine($"{myCard.Name} deal critical damage!");
                     Logger.AppendLogWithLine($"=> {myDamageAdj} VS {enemyDamageAdj}{Environment.NewLine}");
                 }
 
@@ -94,11 +94,11 @@ namespace SWEN1.MTCG.Game
                 if (rd.Next(10) == 0 && string.IsNullOrEmpty(enemyMonsterStatus))
                 {
                     enemyDamageAdj *= 2;
-                    Logger.AppendLogWithLine($"{enemyCard.Name} critical damage!");
+                    Logger.AppendLogWithLine($"{enemyCard.Name} deal critical damage!");
                     Logger.AppendLogWithLine($"=> {myDamageAdj} VS {enemyDamageAdj}{Environment.NewLine}");
                 }
                 
-                // Player 1 wins
+                // Player 1 wins round
                 if (myDamageAdj > enemyDamageAdj || !string.IsNullOrEmpty(enemyMonsterStatus))
                 {
                     Logger.AppendLogWithLine($"=> {myCard.Name} wins.{Environment.NewLine}");
@@ -107,7 +107,7 @@ namespace SWEN1.MTCG.Game
                     Player1RoundWon++;
                 }
                 
-                // Player 2 wins
+                // Player 2 wins round
                 else if (myDamageAdj < enemyDamageAdj || !string.IsNullOrEmpty(myMonsterStatus))
                 {
                     Logger.AppendLogWithLine($"=> {enemyCard.Name} wins.{Environment.NewLine}");

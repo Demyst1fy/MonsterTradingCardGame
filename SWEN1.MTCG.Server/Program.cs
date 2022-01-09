@@ -3,9 +3,9 @@ using SWEN1.MTCG.Server.Interfaces;
 
 namespace SWEN1.MTCG.Server
 {
-    static class Program
+    internal static class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             IHttpServer x = new HttpServer();
             x.Start(10001);

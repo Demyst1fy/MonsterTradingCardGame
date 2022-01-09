@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace SWEN1.MTCG.Game
 {
-    class Program
+    internal static class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             List<string> list = new List<string>()
             {

@@ -12,31 +12,31 @@ namespace SWEN1.MTCG.Server
 {
     public class Database : IDatabase
     {
-        private static Database _dbinstance;
-        
-        private readonly string _host = "localhost";
-        private readonly int _port = 5432;
-        private readonly string _dbusername = "postgres";
-        private readonly string _dbpassword = "postgres";
-        private readonly string _dbname = "mtcg";
+        private static Database _dbInstance;
 
-        private string _conString;
+        private const string Host = "localhost";
+        private const int Port = 5432;
+        private const string DbUsername = "postgres";
+        private const string DbPassword = "postgres";
+        private const string DbName = "mtcg";
+
+        private readonly string _conString;
         
         private Database()
         {
-            _conString = $"Host={_host};" +
-                         $"Port={Convert.ToString(_port)};" +
-                         $"Username={_dbusername};" +
-                         $"Password={_dbpassword};" +
-                         $"Database={_dbname}";
+            _conString = $"Host={Host};" +
+                         $"Port={Convert.ToString(Port)};" +
+                         $"Username={DbUsername};" +
+                         $"Password={DbPassword};" +
+                         $"Database={DbName}";
         }
 
         public static IDatabase GetDataBase()
         {
-            if (_dbinstance == null)
-                _dbinstance = new Database();
+            if (_dbInstance == null)
+                _dbInstance = new Database();
 
-            return _dbinstance;
+            return _dbInstance;
         }
 
         private NpgsqlConnection ConOpen()
@@ -311,9 +311,10 @@ namespace SWEN1.MTCG.Server
         private void TransactionPackage(string packId, string username)
         {
             int cost = 5;
-            
-            const string sql = "UPDATE \"UserTable\" SET u_coins = u_coins - @cost, u_spentcoins = u_spentcoins + @cost WHERE u_username = @u_username";
-            
+
+            const string sql =
+                "UPDATE \"UserTable\" SET u_coins = u_coins - @cost, u_spentcoins = u_spentcoins + @cost WHERE u_username = @u_username";
+
             var con = ConOpen();
             var cmd = new NpgsqlCommand(sql, con);
             cmd.Parameters.AddWithValue("@cost", cost);
@@ -321,10 +322,10 @@ namespace SWEN1.MTCG.Server
             cmd.Prepare();
             cmd.ExecuteNonQuery();
             con.Close();
-            
+
             const string sql2 = "INSERT INTO \"TransactionTable\"(ta_pid, ta_cost, ta_datetime, u_username)" +
-                               "VALUES (@ta_pid, @ta_cost, @ta_datetime, @u_username)";
-            
+                                "VALUES (@ta_pid, @ta_cost, @ta_datetime, @u_username)";
+
             var con2 = ConOpen();
             var cmd2 = new NpgsqlCommand(sql2, con2);
             cmd2.Parameters.AddWithValue("@ta_pid", packId);
@@ -334,22 +335,6 @@ namespace SWEN1.MTCG.Server
             cmd2.Prepare();
             cmd2.ExecuteNonQuery();
             con2.Close();
-        }
-        
-        public void InsertNewCardStack(int uid, string cid, string _cardName, int _dmg)
-        {
-            const string sql = "INSERT INTO \"UserCardTable\"(u_id, c_id, c_name, c_damage, c_indeck)" +
-                               "VALUES (@u_id, @c_id, @c_name, @c_damage, @c_indeck)";
-            var con = ConOpen();
-            var cmd = new NpgsqlCommand(sql, con);
-            cmd.Parameters.AddWithValue("@u_id", uid);
-            cmd.Parameters.AddWithValue("@c_id", cid);
-            cmd.Parameters.AddWithValue("@c_name", _cardName);
-            cmd.Parameters.AddWithValue("@c_damage", _dmg);
-            cmd.Parameters.AddWithValue("@c_indeck", false);
-            cmd.Prepare();
-            cmd.ExecuteNonQuery();
-            con.Close();
         }
 
         public ConfigDeckStatus ConfigureDeck(string[] chosenCardIDs, string username)
@@ -393,7 +378,7 @@ namespace SWEN1.MTCG.Server
             cmd2.ExecuteNonQuery();
             con.Close();
 
-            foreach (var chosenCardID in chosenCardIDs)
+            foreach (var chosenCardId in chosenCardIDs)
             {
                 const string sql3 = "UPDATE \"UserCardTable\" SET c_indeck = @c_indeck WHERE u_username = @u_username AND c_id = @c_id";
                 
@@ -401,7 +386,7 @@ namespace SWEN1.MTCG.Server
                 var cmd3 = new NpgsqlCommand(sql3, con);
                 cmd3.Parameters.AddWithValue("@c_indeck", true);
                 cmd3.Parameters.AddWithValue("@u_username", username);
-                cmd3.Parameters.AddWithValue("@c_id", chosenCardID);
+                cmd3.Parameters.AddWithValue("@c_id", chosenCardId);
                 cmd3.Prepare();
                 cmd3.ExecuteNonQuery();
                 con.Close();
